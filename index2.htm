@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aitie — Alex Morgan Candidate Profile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base: #f1f3f7;
+    --primary: #0f172a;
+    --primary-hover: #1e293b;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --card-bg: #ffffff;
+    --border-color: rgba(15, 23, 42, 0.05);
+    
+    --accent-blue: #2563eb;
+    --accent-blue-light: #eff6ff;
+    --accent-green: #10b981;
+    --accent-green-light: #ecfdf5;
+    --accent-orange: #f59e0b;
+    --accent-orange-light: #fffbeb;
+    --accent-red: #ef4444;
+    --accent-red-light: #fef2f2;
+    --accent-purple: #8b5cf6;
+    --accent-purple-light: #faf5ff;
+    
+    --radius-xl: 32px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+    
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.01), 0 1px 2px rgba(0,0,0,0.005);
+    --shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 8px -1px rgba(15, 23, 42, 0.02);
+    --shadow-lg: 0 20px 40px -4px rgba(15, 23, 42, 0.06), 0 6px 16px -2px rgba(15, 23, 42, 0.03);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 13.5px;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 60px;
+  }
+
+  /* ── BACKGROUND GLOW BLOBS ── */
+  .bg-blob {
+    position: fixed;
+    width: 650px;
+    height: 650px;
+    border-radius: 50%;
+    filter: blur(140px);
+    z-index: 0;
+    opacity: 0.35;
+    pointer-events: none;
+    animation: blobFloat 22s infinite alternate ease-in-out;
+  }
+  .blob-1 {
+    background: radial-gradient(circle, #bfdbfe 0%, rgba(191, 219, 254, 0) 70%);
+    top: -15%;
+    left: -10%;
+  }
+  .blob-2 {
+    background: radial-gradient(circle, #fbcfe8 0%, rgba(251, 207, 232, 0) 70%);
+    bottom: -10%;
+    right: -10%;
+    animation-delay: 3s;
+  }
+  .blob-3 {
+    background: radial-gradient(circle, #fed7aa 0%, rgba(254, 215, 170, 0) 70%);
+    top: 35%;
+    right: 20%;
+    animation-delay: 6s;
+  }
+  @keyframes blobFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(40px, 60px) scale(1.1); }
+    100% { transform: translate(-30px, 30px) scale(0.9); }
+  }
+
+  /* ── HEADER NAVIGATION TOPBAR ── */
+  .topbar {
+    height: 72px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .back-btn {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+  .back-btn:hover {
+    color: var(--text-primary);
+    transform: translateX(-2px);
+  }
+  .back-btn-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-center {
+    flex: 1;
+    max-width: 480px;
+    margin: 0 32px;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    border-radius: 999px;
+    padding: 8px 18px;
+    color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+  }
+  .search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 13.5px;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .topbar-utility-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-utility-btn:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    transform: translateY(-1px);
+  }
+  .notif-badge {
+    position: absolute;
+    top: 2px; right: 2px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--accent-red);
+    border: 2px solid #ffffff;
+  }
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: right;
+  }
+  .admin-meta {
+    display: flex;
+    flex-direction: column;
+  }
+  .admin-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+  .admin-role {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .admin-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ffffff;
+    box-shadow: var(--shadow-sm);
+  }
+  .admin-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── MAIN DASHBOARD CONTENT CONTAINER ── */
+  .profile-container {
+    max-width: 1280px;
+    margin: 32px auto 0;
+    padding: 0 24px;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── GRID SYSTEM FOR PROFILE LAYOUT ── */
+  .dashboard-grid-top {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+  }
+
+  /* ── LEFT PROFILE PORTRAIT CARD ── */
+  .portrait-card {
+    background: #ffffff;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    height: 440px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .portrait-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .portrait-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(15, 23, 42, 0.85) 100%);
+    z-index: 2;
+  }
+  .portrait-actions-top {
+    position: absolute;
+    top: 20px; left: 20px; right: 20px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 10;
+  }
+  .portrait-btn {
+    border-radius: 999px;
+    border: none;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .share-btn {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .share-btn:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+  }
+  .bookmark-btn {
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-secondary);
+  }
+  .bookmark-btn:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+  }
+  .bookmark-btn.bookmarked {
+    color: var(--accent-green);
+    background: #ffffff;
+  }
+  .portrait-text-content {
+    position: relative;
+    z-index: 10;
+    padding: 30px 24px;
+    color: #ffffff;
+  }
+  .portrait-name {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    line-height: 1.1;
+  }
+  .portrait-role {
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.95;
+    margin-top: 4px;
+  }
+  .portrait-meta {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* ── RIGHT METRICS GRID ── */
+  .metrics-grid-holder {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .metrics-row-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    flex: 1;
+  }
+
+  /* Dashboard Grid Cards */
+  .grid-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .grid-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .card-label {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+  
+  /* Fit Score Card layout */
+  .fit-score-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex: 1;
+  }
+  .fit-score-ring-wrap {
+    position: relative;
+    width: 64px; height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fit-score-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent-green);
+  }
+  .fit-trend-badge {
+    background: var(--accent-green-light);
+    color: var(--accent-green);
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* Large Value Text style */
+  .card-large-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+    margin-top: auto;
+  }
+  .card-subtext {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* Core Skills capsules */
+  .skills-pills-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .skill-pill {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .skill-pill.highlight {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+  }
+  .skill-pill.plus {
+    background: var(--primary);
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  /* ── FULL-WIDTH ALERT RECOMMENDATION BANNER ── */
+  .recommendation-banner {
+    background: var(--accent-blue-light);
+    border: 1px solid rgba(37, 99, 235, 0.08);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--accent-blue);
+    line-height: 1.6;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+  }
+  .recommendation-banner svg {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── SECONDARY DETAIL COLUMNS GRID ── */
+  .dashboard-grid-middle {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .detail-panel-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .panel-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    padding-bottom: 8px;
+  }
+
+  /* Pool Relevance Row list */
+  .pool-relevance-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pool-row-item {
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.02);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pool-name {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .fit-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+  .fit-badge.high {
+    background: var(--accent-green-light);
+    color: var(--accent-green);
+  }
+
+  /* Skills Profile bars */
+  .skills-bars-list {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+  .skill-bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .skill-bar-label-group {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .skill-bar-bg {
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .skill-bar-fill.accent {
+    background: var(--accent-blue);
+  }
+
+  /* Behavioral Indicators styles */
+  .behavioral-list {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+  .behavioral-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .behavioral-label-group {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .behavioral-bar-bg {
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .behavioral-bar-fill {
+    height: 100%;
+    background: var(--accent-green);
+    border-radius: 3px;
+  }
+  .behavioral-bar-fill.orange {
+    background: var(--accent-orange);
+  }
+
+  /* ── TIMELINE WORK EXPERIENCE & EDUCATION GRID ── */
+  .dashboard-grid-timeline {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr;
+    gap: 24px;
+  }
+
+  /* Timeline list */
+  .timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    padding-left: 16px;
+    margin-top: 4px;
+  }
+  .timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: #f1f5f9;
+  }
+  .timeline-block {
+    position: relative;
+    padding-left: 18px;
+  }
+  .timeline-block::before {
+    content: '';
+    position: absolute;
+    left: -18px; top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid #ffffff;
+    box-shadow: var(--shadow-sm);
+  }
+  .timeline-block.edu::before {
+    background: var(--accent-blue);
+  }
+  .timeline-block.cert::before {
+    background: var(--accent-purple);
+  }
+  .timeline-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .timeline-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .timeline-meta {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-top: 1px;
+  }
+  .timeline-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 750;
+  }
+  .timeline-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-top: 6px;
+  }
+
+  /* Risk flags */
+  .risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .risk-card-item {
+    background: var(--accent-red-light);
+    border: 1.2px solid rgba(239, 68, 68, 0.05);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .risk-card-item.safe {
+    background: var(--accent-green-light);
+    border-color: rgba(16, 185, 129, 0.05);
+  }
+  .risk-icon {
+    color: var(--accent-red);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .risk-card-item.safe .risk-icon {
+    color: var(--accent-green);
+  }
+  .risk-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .risk-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* ── PORTFOLIO CAPABILITY PROOF OF WORK ── */
+  .portfolio-row-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .pow-card {
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.02);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .pow-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .pow-thumbnail {
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+    background: #e2e8f0;
+  }
+  .pow-thumbnail img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .pow-verified-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--accent-green);
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .pow-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pow-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .pow-tech-tags {
+    display: flex;
+    gap: 4px;
+  }
+  .pow-tech-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: #ffffff;
+    border: 1.2px solid rgba(15, 23, 42, 0.06);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  /* ── FREELANCER SNAPSHOT & MARKETPLACE ── */
+  .dashboard-grid-marketplace {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 24px;
+  }
+  .engagement-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .eng-stat-card {
+    background: #f8fafc;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.02);
+    box-shadow: var(--shadow-sm);
+  }
+  .eng-stat-label {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .eng-stat-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-top: 4px;
+  }
+  .eng-stat-sub {
+    font-size: 11px;
+    color: var(--accent-green);
+    font-weight: 700;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* Marketplace services list */
+  .services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .service-item-row {
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.02);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .service-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .service-name {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .service-type-badge {
+    font-size: 9.5px;
+    color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    padding: 1px 6px;
+    border-radius: 4px;
+    width: fit-content;
+    font-weight: 700;
+  }
+  .service-price {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  /* ── CLIENT TESTIMONIALS REVIEWS ── */
+  .reviews-list-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .review-bubble {
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.02);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .review-client {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .review-rating {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--accent-orange);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .review-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ── DIGITAL ASSETS GENERATED OUTPUTS ── */
+  .digital-assets-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .asset-card {
+    background: #f8fafc;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+    justify-content: space-between;
+  }
+  .asset-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .asset-title {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .asset-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .asset-action-btn {
+    width: 100%;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1.2px solid rgba(15, 23, 42, 0.08);
+    background: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-align: center;
+  }
+  .asset-action-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+  }
+
+  /* Interactive Digital ID card representation */
+  .digital-id-panel {
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 150px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .digital-id-panel::after {
+    content: '';
+    position: absolute;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+    top: -20px; right: -20px;
+  }
+  .digital-id-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .digital-id-logo {
+    font-weight: 850;
+    font-size: 16px;
+    letter-spacing: -0.5px;
+  }
+  .digital-id-logo span {
+    color: var(--accent-blue);
+  }
+  .digital-id-badge {
+    background: var(--accent-green);
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .digital-id-num {
+    font-size: 18px;
+    font-weight: 800;
+    font-family: monospace;
+    letter-spacing: 2px;
+  }
+  .digital-id-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    opacity: 0.7;
+  }
+
+  /* ── INTERVIEW VIDEO PLAYER & PERSONALITY CARD (SIDEBAR WIDGETS) ── */
+  .dashboard-grid-widgets {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+  }
+  
+  /* Interview video card styles */
+  .video-player-container {
+    width: 100%;
+    height: 170px;
+    background: #0f172a;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .video-player-thumbnail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.65;
+    filter: brightness(0.85);
+    transition: transform 0.4s ease;
+  }
+  .video-player-container:hover .video-player-thumbnail {
+    transform: scale(1.03);
+  }
+  .video-play-overlay-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .video-player-container:hover .video-play-overlay-btn {
+    background: var(--accent-blue);
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+  .video-duration-tag {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 10;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .video-caption-label {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    line-height: 1.4;
+    display: flex;
+    gap: 4px;
+  }
+
+  /* Personality dimension slider block */
+  .personality-profile-card {
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.02);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .personality-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .personality-type-tag {
+    font-size: 10px;
+    font-weight: 850;
+    color: var(--accent-purple);
+    background: var(--accent-purple-light);
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .personality-type-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .personality-dimensions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .personality-dim-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .personality-dim-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .personality-dim-bar {
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .personality-dim-bar-fill {
+    height: 100%;
+    background: var(--accent-purple);
+    border-radius: 2px;
+  }
+
+  /* ── QUESTIONS AND ANSWERS ACCORDION DRAWER ── */
+  .qa-section-holder {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .qa-accordion-toggle-btn {
+    width: 100%;
+    padding: 12px 18px;
+    background: #f8fafc;
+    border: 1.2px solid rgba(15, 23, 42, 0.05);
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+  }
+  .qa-accordion-toggle-btn:hover {
+    border-color: var(--primary);
+    background: #ffffff;
+  }
+  .qa-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+  }
+  .qa-accordion-content.open {
+    max-height: 800px;
+    opacity: 1;
+    margin-top: 12px;
+    padding-top: 4px;
+  }
+  .qa-item-card {
+    background: #ffffff;
+    border: 1.2px solid rgba(15, 23, 42, 0.04);
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .qa-item-question {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    gap: 6px;
+  }
+  .qa-item-question span {
+    color: var(--accent-blue);
+  }
+  .qa-item-answer {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ── TOAST NOTIFICATIONS ── */
+  .toast-container {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  @keyframes toastSlide {
+    from { opacity: 0; transform: translateY(12px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* SVG Indicator Ring details */
+  svg.indicator-ring-circle {
+    transform: rotate(-90deg);
+  }
+
+  /* Custom responsive overrides */
+  @media (max-width: 1024px) {
+    .dashboard-grid-top { grid-template-columns: 1fr; }
+    .dashboard-grid-middle { grid-template-columns: 1fr; }
+    .dashboard-grid-timeline { grid-template-columns: 1fr; }
+    .dashboard-grid-marketplace { grid-template-columns: 1fr; }
+    .dashboard-grid-widgets { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND RADIAL GLOW BLOBS -->
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+<div class="bg-blob blob-3"></div>
+
+<!-- HEADER TOPBAR NAVIGATION -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="aitie_shortlist_pipeline.html" class="back-btn">
+      <div class="back-btn-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      Back to Candidates
+    </a>
+  </div>
+  <div class="topbar-center">
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search parameters…" />
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-utility-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <div class="topbar-utility-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-badge"></span>
+    </div>
+    <div class="admin-info">
+      <div class="admin-meta">
+        <span class="admin-name">Theodore Admin</span>
+        <span class="admin-role">Super Recruiter</span>
+      </div>
+      <div class="admin-avatar">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120&h=120" alt="Admin Headshot" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN DASHBOARD CONTENT AREA -->
+<main class="profile-container">
+
+  <!-- TOP HERO & METRICS ROW -->
+  <div class="dashboard-grid-top">
+    
+    <!-- LEFT PORTRAIT CARD -->
+    <div class="portrait-card">
+      <img class="portrait-bg-image" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=350&h=450" alt="Alex Morgan Portrait" />
+      <div class="portrait-overlay"></div>
+      <div class="portrait-actions-top">
+        <button class="portrait-btn share-btn" onclick="copyProfileLink()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Share Profile
+        </button>
+        <button class="portrait-btn bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark Candidate">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+      </div>
+      <div class="portrait-text-content">
+        <h1 class="portrait-name">Alex Morgan</h1>
+        <div class="portrait-role">Senior Product Designer</div>
+        <div class="portrait-meta">Bangalore, India · 8+ Years of Experience</div>
+      </div>
+    </div>
+
+    <!-- RIGHT METRICS GRID (3x2) -->
+    <div class="metrics-grid-holder">
+      <div class="metrics-row-grid">
+        
+        <!-- Fit Score -->
+        <div class="grid-card">
+          <span class="card-label">Fit Score</span>
+          <div class="fit-score-block">
+            <div class="fit-score-ring-wrap">
+              <svg class="indicator-ring-circle" width="60" height="60" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(16, 185, 129, 0.05)" stroke-width="3"/>
+                <circle cx="18" cy="18" r="16" fill="none" stroke="var(--accent-green)" stroke-width="3"
+                  stroke-dasharray="94.25 100.53" stroke-linecap="round"/>
+              </svg>
+              <div class="fit-score-text" style="position: absolute;">94</div>
+            </div>
+            <span class="fit-trend-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+              &nearr; 5%
+            </span>
+          </div>
+        </div>
+
+        <!-- Salary Expectations -->
+        <div class="grid-card">
+          <span class="card-label">Salary Expectations</span>
+          <div class="card-large-value">₹16L – ₹22L</div>
+          <span class="card-subtext">per year · (Within Target Band)</span>
+        </div>
+
+        <!-- Availability -->
+        <div class="grid-card">
+          <span class="card-label">Availability</span>
+          <div class="card-large-value">2 Weeks</div>
+          <span class="card-subtext">notice period · Actively Available</span>
+        </div>
+
+      </div>
+      <div class="metrics-row-grid">
+        
+        <!-- Core Skills -->
+        <div class="grid-card">
+          <span class="card-label">Core Skills</span>
+          <div class="skills-pills-flex">
+            <span class="skill-pill highlight">Pricing strategy</span>
+            <span class="skill-pill highlight">Funnel optimisation</span>
+            <span class="skill-pill highlight">A/B testing</span>
+            <span class="skill-pill">Product analytics</span>
+            <span class="skill-pill">PLG</span>
+            <span class="skill-pill plus">+8</span>
+          </div>
+        </div>
+
+        <!-- Open to -->
+        <div class="grid-card">
+          <span class="card-label">Open to</span>
+          <div class="card-large-value">Full-time</div>
+          <span class="card-subtext">contract type preference</span>
+        </div>
+
+        <!-- Mode of Work -->
+        <div class="grid-card">
+          <span class="card-label">Mode of work</span>
+          <div class="card-large-value">Remote</div>
+          <span class="card-subtext">location matching IST &plusmn; 2h</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FULL-WIDTH ALERT RECOMMENDATION SUMMARY -->
+  <div class="recommendation-banner">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <span>Alex has led end-to-end design for two B2C fintech products with &gt;5M users, directly matching this role's scope. His AI-assisted design workflow and cross-functional facilitation experience address your team's stated design systems gaps. Salary expectations fall fully within approved budget guidelines.</span>
+  </div>
+
+  <!-- MID DASHBOARD GRID: RELEVANCE, SKILLS PROFILE & BEHAVIORAL INDICATORS -->
+  <div class="dashboard-grid-middle">
+    
+    <!-- POOL RELEVANCE -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Pool Relevance</span>
+      <div class="pool-relevance-list">
+        <div class="pool-row-item">
+          <span class="pool-name">Fintech Design</span>
+          <span class="fit-badge high">High Fit</span>
+        </div>
+        <div class="pool-row-item">
+          <span class="pool-name">Design Systems</span>
+          <span class="fit-badge high">High Fit</span>
+        </div>
+        <div class="pool-row-item">
+          <span class="pool-name">Growth Design</span>
+          <span class="fit-badge high">High Fit</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS CAPABILITIES PROFILE -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Skills Profile</span>
+      <div class="skills-bars-list">
+        <div class="skill-bar-row">
+          <div class="skill-bar-label-group"><span>Product thinking</span><span>84%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 84%;"></div></div>
+        </div>
+        <div class="skill-bar-row">
+          <div class="skill-bar-label-group"><span>Design systems</span><span>69%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 69%;"></div></div>
+        </div>
+        <div class="skill-bar-row">
+          <div class="skill-bar-label-group"><span>User research</span><span>35%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 35%;"></div></div>
+        </div>
+        <div class="skill-bar-row">
+          <div class="skill-bar-label-group"><span>AI/ML design</span><span>51%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 51%;"></div></div>
+        </div>
+        <div class="skill-bar-row">
+          <div class="skill-bar-label-group"><span>Prototyping</span><span>75%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 75%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEHAVIORAL INDICATORS -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Behavioral Indicators</span>
+      <div class="behavioral-list">
+        <div class="behavioral-row">
+          <div class="behavioral-label-group"><span>Task completion</span><span>84%</span></div>
+          <div class="behavioral-bar-bg"><div class="behavioral-bar-fill" style="width: 84%;"></div></div>
+        </div>
+        <div class="behavioral-row">
+          <div class="behavioral-label-group"><span>Assessment pass</span><span>69%</span></div>
+          <div class="behavioral-bar-bg"><div class="behavioral-bar-fill" style="width: 69%;"></div></div>
+        </div>
+        <div class="behavioral-row">
+          <div class="behavioral-label-group"><span>AI interview done</span><span>87%</span></div>
+          <div class="behavioral-bar-bg"><div class="behavioral-bar-fill orange" style="width: 87%;"></div></div>
+        </div>
+        <div class="behavioral-row">
+          <div class="behavioral-label-group"><span>Passport verified</span><span>71%</span></div>
+          <div class="behavioral-bar-bg"><div class="behavioral-bar-fill orange" style="width: 71%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INTERVIEW VIDEO & PERSONALITY DIMENSIONS (AI ASSISTED INSIGHTS) -->
+  <div class="dashboard-grid-widgets">
+    
+    <!-- INTERVIEW VIDEO PLAYER -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Candidate Interview Video</span>
+      <div class="video-player-container" id="videoPlayer" onclick="togglePlayVideo(this)">
+        <img class="video-player-thumbnail" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=500&h=300" alt="Video Thumbnail" />
+        <div class="video-play-overlay-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </div>
+        <span class="video-duration-tag">2:15</span>
+        <div class="video-progress-bar" style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.3); display: none;">
+          <div class="video-progress-fill" style="height: 100%; width: 0%; background: var(--accent-blue); transition: width 0.1s linear;"></div>
+        </div>
+      </div>
+      <div class="video-caption-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink: 0; margin-top: 2px; color: var(--accent-blue);">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        <span>Describe how you maintain design system components across remote frontend pods.</span>
+      </div>
+    </div>
+
+    <!-- PERSONALITY PROFILE (MBTI) -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Personality Profile</span>
+      <div class="personality-profile-card">
+        <div class="personality-title-row">
+          <span style="font-weight:700; color:var(--text-primary); font-size:12.5px;">MBTI Type</span>
+          <span class="personality-type-tag">INTJ - The Architect</span>
+        </div>
+        <p class="personality-type-desc">Highly analytical, strategic, and organized. Excels at planning complex systems, resolving design logic drift, and scaling interface architectures.</p>
+        <div class="personality-dimensions-grid">
+          <div class="personality-dim-item">
+            <span class="personality-dim-label">Analytical (95%)</span>
+            <div class="personality-dim-bar"><div class="personality-dim-bar-fill" style="width: 95%;"></div></div>
+          </div>
+          <div class="personality-dim-item">
+            <span class="personality-dim-label">Collaborative (78%)</span>
+            <div class="personality-dim-bar"><div class="personality-dim-bar-fill" style="width: 78%;"></div></div>
+          </div>
+          <div class="personality-dim-item">
+            <span class="personality-dim-label">Adaptability (85%)</span>
+            <div class="personality-dim-bar"><div class="personality-dim-bar-fill" style="width: 85%;"></div></div>
+          </div>
+          <div class="personality-dim-item">
+            <span class="personality-dim-label">Communication (80%)</span>
+            <div class="personality-dim-bar"><div class="personality-dim-bar-fill" style="width: 80%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TIMELINE GRID: WORK EXPERIENCE & EDUCATION / RISKS -->
+  <div class="dashboard-grid-timeline">
+    
+    <!-- WORK & EDUCATION TIMELINE -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Work Experience & Education</span>
+      <div class="timeline-container">
+        
+        <!-- Experience 1 -->
+        <div class="timeline-block">
+          <div class="timeline-header-row">
+            <div>
+              <div class="timeline-title">Senior Product Designer</div>
+              <div class="timeline-meta">STN Agency · Full-time</div>
+            </div>
+            <span class="timeline-date">2024 - Present (2 years)</span>
+          </div>
+          <p class="timeline-description">Led design strategy for core merchant portals and e-commerce configurations. Collaborated closely with React developers to establish dynamic component systems.</p>
+        </div>
+
+        <!-- Experience 2 -->
+        <div class="timeline-block">
+          <div class="timeline-header-row">
+            <div>
+              <div class="timeline-title">Product Designer</div>
+              <div class="timeline-meta">Product Company · Full-time</div>
+            </div>
+            <span class="timeline-date">2022 - 2024 (2 years)</span>
+          </div>
+          <p class="timeline-description">Designed SaaS analytics dashboards and onboarding structures. Led user research interviews which contributed to a 15% increase in conversion rates.</p>
+        </div>
+
+        <!-- Education 1 -->
+        <div class="timeline-block edu">
+          <div class="timeline-header-row">
+            <div>
+              <div class="timeline-title">Product Design (B.Des)</div>
+              <div class="timeline-meta">UAL - University of the Arts London</div>
+            </div>
+            <span class="timeline-date">2022 - 2026 (4 years)</span>
+          </div>
+          <p class="timeline-description">Specialized in human-computer interaction, product usability paradigms, and high-density transactional wireframe mockups.</p>
+        </div>
+
+        <!-- Certification 1 -->
+        <div class="timeline-block cert">
+          <div class="timeline-header-row">
+            <div>
+              <div class="timeline-title">Google UX Design Professional Certificate</div>
+              <div class="timeline-meta">Google UX Certificate</div>
+            </div>
+            <span class="timeline-date">2021 - 2022 (1 year)</span>
+          </div>
+          <p class="timeline-description">Comprehensive certification mapping visual design frameworks, accessibility benchmarks, and mobile prototyping standards.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RISK FLAGS -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Risk Flags</span>
+      <div class="risk-list">
+        
+        <div class="risk-card-item">
+          <span class="risk-icon">⚠️</span>
+          <div class="risk-body">
+            <span class="risk-title">Short tenure at last role</span>
+            <p class="risk-desc">Left STN Agency after 11 months; prior roles average around 2.5 years.</p>
+          </div>
+        </div>
+
+        <div class="risk-card-item safe">
+          <span class="risk-icon">✓</span>
+          <div class="risk-body">
+            <span class="risk-title">Salary within budget</span>
+            <p class="risk-desc">Expectation of ₹16L – ₹22L aligns directly within our approved band of ₹15L – ₹25L.</p>
+          </div>
+        </div>
+
+        <div class="risk-card-item">
+          <span class="risk-icon">⚠️</span>
+          <div class="risk-body">
+            <span class="risk-title">No B2B SaaS experience</span>
+            <p class="risk-desc">Background is heavily consumer e-commerce focused. May require onboarding support on complex systems.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PORTFOLIO PROOF OF WORK & KEYWORDS -->
+  <div class="dashboard-grid-timeline">
+    
+    <!-- PORTFOLIO GALLERY -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Proof of Work / Featured Cases</span>
+      <div class="portfolio-row-cards">
+        
+        <!-- Project 1 -->
+        <div class="pow-card">
+          <div class="pow-thumbnail">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=300&h=200" alt="E-commerce Dashboard" />
+            <span class="pow-verified-badge">Verified</span>
+          </div>
+          <div class="pow-body">
+            <div class="pow-title">E-commerce Analytical Dashboard</div>
+            <div class="pow-tech-tags">
+              <span class="pow-tech-badge">Figma</span>
+              <span class="pow-tech-badge">Framer</span>
+              <span class="pow-tech-badge">Chart.js</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="pow-card">
+          <div class="pow-thumbnail">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=300&h=200" alt="Design System" />
+            <span class="pow-verified-badge">Verified</span>
+          </div>
+          <div class="pow-body">
+            <div class="pow-title">E-commerce Global Design System</div>
+            <div class="pow-tech-tags">
+              <span class="pow-tech-badge">Figma</span>
+              <span class="pow-tech-badge">Tokens Studio</span>
+              <span class="pow-tech-badge">CSS Variables</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- KEYWORDS & CAPABILITIES -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Keywords & Domain Expertise</span>
+      <div class="skills-pills-flex" style="margin-top: 10px; gap: 8px;">
+        <span class="skill-pill highlight">A/B Testing</span>
+        <span class="skill-pill highlight">SaaS Design</span>
+        <span class="skill-pill">User Flow</span>
+        <span class="skill-pill">MVP Design</span>
+        <span class="skill-pill highlight">UX Research</span>
+        <span class="skill-pill">Design System</span>
+        <span class="skill-pill highlight">Conversion Optimization</span>
+        <span class="skill-pill">Interactive Prototypes</span>
+        <span class="skill-pill">Framer Animations</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MARKETPLACE SERVICES & ENGAGEMENT STATS -->
+  <div class="dashboard-grid-marketplace">
+    
+    <!-- STATS ENGAGEMENT -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Engagement Snapshot (Freelance Marketplace)</span>
+      <div class="engagement-stats-grid">
+        
+        <div class="eng-stat-card">
+          <span class="eng-stat-label">Tasks Completed</span>
+          <div class="eng-stat-val">127</div>
+          <span class="eng-stat-sub">✓ 100% Client satisfaction</span>
+        </div>
+
+        <div class="eng-stat-card">
+          <span class="eng-stat-label">Revenue Earned</span>
+          <div class="eng-stat-val">$3,200</div>
+          <span class="eng-stat-sub">Avg. $45 / task value</span>
+        </div>
+
+        <div class="eng-stat-card">
+          <span class="eng-stat-label">Average Rating</span>
+          <div class="eng-stat-val">4.9 / 5.0</div>
+          <span class="eng-stat-sub" style="color:var(--accent-orange)">★ ★ ★ ★ ★</span>
+        </div>
+
+        <div class="eng-stat-card">
+          <span class="eng-stat-label">On-Time Delivery</span>
+          <div class="eng-stat-val">98%</div>
+          <span class="eng-stat-sub">Within stated milestones</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SERVICES OFFERED -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Service Readiness / Marketplace Options</span>
+      <div class="services-list">
+        
+        <div class="service-item-row">
+          <div class="service-meta">
+            <span class="service-name">Quick Design Audit</span>
+            <span class="service-type-badge">Quick Task</span>
+          </div>
+          <span class="service-price">$250</span>
+        </div>
+
+        <div class="service-item-row">
+          <div class="service-meta">
+            <span class="service-name">Expert Consulting Hour</span>
+            <span class="service-type-badge">Expert Taps</span>
+          </div>
+          <span class="service-price">$120/hr</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TIMELINE-LIKE CARD FOR CLIENT REVIEWS & DIGITAL OUTPUTS -->
+  <div class="dashboard-grid-timeline">
+    
+    <!-- CLIENT REVIEWS -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Client Feedback & Reviews</span>
+      <div class="reviews-list-col">
+        
+        <div class="review-bubble">
+          <div class="review-header">
+            <span class="review-client">TechFlow Inc.</span>
+            <span class="review-rating">★ 4.8</span>
+          </div>
+          <p class="review-text">"Great work! Delivered the design system components on time with excellent visual quality. Communication was clear throughout the project. Would definitely work together again."</p>
+        </div>
+
+        <div class="review-bubble">
+          <div class="review-header">
+            <span class="review-client">Apex Design Studio</span>
+            <span class="review-rating">★ 5.0</span>
+          </div>
+          <p class="review-text">"Alex mapped our onboarding dashboard wireframes perfectly. He accommodated all UX revisions immediately and helped our React devs execute the layouts seamlessly."</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DIGITAL ID CARD & VERIFIED BADGES -->
+    <div class="detail-panel-card">
+      <span class="panel-title">Generated Outputs & Verification Passport</span>
+      
+      <!-- Interactive Digital ID card representation -->
+      <div class="digital-id-panel">
+        <div class="digital-id-header">
+          <div class="digital-id-logo">ait<span>ie</span></div>
+          <span class="digital-id-badge">Verified ID</span>
+        </div>
+        <div class="digital-id-num">2533 2211</div>
+        <div class="digital-id-meta">
+          <div>
+            <span style="display:block; font-size:8px; opacity:0.6; text-transform:uppercase;">Status</span>
+            <span style="font-weight:700;">Available</span>
+          </div>
+          <div>
+            <span style="display:block; font-size:8px; opacity:0.6; text-transform:uppercase;">Score</span>
+            <span style="font-weight:700; color:var(--accent-green)">82 Score</span>
+          </div>
+          <div>
+            <span style="display:block; font-size:8px; opacity:0.6; text-transform:uppercase;">Handle</span>
+            <span style="font-weight:700;">@alex_morgan</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assets flex actions -->
+      <div class="digital-assets-col">
+        <div class="asset-card">
+          <div class="asset-info">
+            <span class="asset-title">Professional CV</span>
+            <span class="asset-sub">Auto-generated pdf</span>
+          </div>
+          <button class="asset-action-btn" onclick="showToast('Downloading Professional CV (PDF)...')">Download CV</button>
+        </div>
+
+        <div class="asset-card">
+          <div class="asset-info">
+            <span class="asset-title">Digital Passport</span>
+            <span class="asset-sub">Secure credentials</span>
+          </div>
+          <button class="asset-action-btn" onclick="showToast('Verifying digital blockchain passport...')">View Passport</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SCREENING QUESTIONS ACCORDION PANEL -->
+  <div class="qa-section-holder">
+    <span class="panel-title">Evaluation process Screening Q&As</span>
+    <button class="qa-accordion-toggle-btn" id="qaAccordionBtn" onclick="toggleQaAccordion()">
+      <span>View Screening Q&As (3 Answers)</span>
+      <svg id="qaAccordionArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.25s;"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="qa-accordion-content" id="qaAccordionContent">
+      
+      <div class="qa-item-card">
+        <div class="qa-item-question">
+          <span>Q1:</span> Explain how you audit a design system with legacy component aliases.
+        </div>
+        <p class="qa-item-answer">I write search scripts to catalogue variable patterns in codebase repositories, establish mapping aliases in coordination with front-end leads, and implement Figma Token alias mapping files.</p>
+      </div>
+
+      <div class="qa-item-card">
+        <div class="qa-item-question">
+          <span>Q2:</span> Describe a time you had to compromise on visual design detail for quick shipping.
+        </div>
+        <p class="qa-item-answer">For a checkout page onboarding test, complex canvas layouts were slowing loading speed. I modified it to use clean fallback CSS flex grids, bringing load speed to 150ms while meeting 92% of design goals.</p>
+      </div>
+
+      <div class="qa-item-card">
+        <div class="qa-item-question">
+          <span>Q3:</span> How do you run usability tests for high-density B2B table configurations?
+        </div>
+        <p class="qa-item-answer">I select users for contextual inquiry and watch them carry out their daily workflows. I track completion times, error frequency, and toggle usage for data filters to optimize visual layout parameters.</p>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- TOAST MESSAGE CENTER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ── TOAST NOTIFIER ──
+  function showToast(msg) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<span>${msg}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-4px) scale(0.95)';
+      toast.style.transition = 'all 0.25s ease';
+      setTimeout(() => toast.remove(), 250);
+    }, 2800);
+  }
+
+  // ── BOOKMARK TOGGLE ──
+  function toggleBookmark() {
+    const btn = document.getElementById('bookmarkBtn');
+    const isBookmarked = btn.classList.toggle('bookmarked');
+    if (isBookmarked) {
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+      showToast('Candidate added to shortlist bookmarks.');
+    } else {
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+      showToast('Candidate removed from bookmarks.');
+    }
+  }
+
+  // ── COPY PROFILE LINK ──
+  function copyProfileLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showToast('📋 Profile link copied to clipboard!');
+    }).catch(() => {
+      showToast('❌ Failed to copy profile link.');
+    });
+  }
+
+  // ── SCREENING Q&A ACCORDION TOGGLE ──
+  function toggleQaAccordion() {
+    const content = document.getElementById('qaAccordionContent');
+    const arrow = document.getElementById('qaAccordionArrow');
+    const isOpen = content.classList.toggle('open');
+    if (isOpen) {
+      arrow.style.transform = 'rotate(180deg)';
+    } else {
+      arrow.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  // ── SIMULATED INTERVIEW VIDEO PLAYER INTERACTIVITY ──
+  let videoInterval = null;
+  function togglePlayVideo(container) {
+    const fill = container.querySelector('.video-progress-fill');
+    const bar = container.querySelector('.video-progress-bar');
+    const playBtn = container.querySelector('.video-play-overlay-btn');
+    const isPlaying = container.classList.toggle('playing');
+    
+    if (isPlaying) {
+      bar.style.display = 'block';
+      playBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+        </svg>`;
+      playBtn.style.background = 'var(--accent-blue)';
+      playBtn.style.color = '#ffffff';
+      
+      let pct = 0;
+      fill.style.width = '0%';
+      if (videoInterval) clearInterval(videoInterval);
+      videoInterval = setInterval(() => {
+        pct += 1.5;
+        fill.style.width = Math.min(pct, 100) + '%';
+        if (pct >= 100) {
+          clearInterval(videoInterval);
+          videoInterval = null;
+          container.classList.remove('playing');
+          bar.style.display = 'none';
+          playBtn.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>`;
+          playBtn.style.background = 'rgba(255,255,255,0.95)';
+          playBtn.style.color = '#0f172a';
+        }
+      }, 100);
+    } else {
+      if (videoInterval) {
+        clearInterval(videoInterval);
+        videoInterval = null;
+      }
+      bar.style.display = 'none';
+      playBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>`;
+      playBtn.style.background = 'rgba(255,255,255,0.95)';
+      playBtn.style.color = '#0f172a';
+    }
+  }
+</script>
+
+</body>
+</html>

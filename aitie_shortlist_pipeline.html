@@ -1,0 +1,3134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aitie — Shortlist Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base: #f0f2f6;
+    --primary: #0f172a;
+    --primary-hover: #1e293b;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --card-bg: #ffffff;
+    --border-color: rgba(15, 23, 42, 0.06);
+    --border-glass: rgba(255, 255, 255, 0.6);
+    
+    --accent-blue: #2563eb;
+    --accent-blue-light: #eff6ff;
+    --accent-green: #16a34a;
+    --accent-green-light: #f0fdf4;
+    --accent-orange: #d97706;
+    --accent-orange-light: #fffbeb;
+    --accent-red: #dc2626;
+    --accent-red-light: #fef2f2;
+    --accent-purple: #7c3aed;
+    --accent-purple-light: #faf5ff;
+    
+    --radius-lg: 28px;
+    --radius-md: 20px;
+    --radius-sm: 12px;
+    
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px 0 rgba(0, 0, 0, 0.01);
+    --shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.03), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+    --shadow-lg: 0 16px 32px -4px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    font-size: 13px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND BLOBS ── */
+  .bg-blob {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(140px);
+    z-index: 0;
+    opacity: 0.4;
+    pointer-events: none;
+    animation: blobFloat 25s infinite alternate ease-in-out;
+  }
+  .blob-1 {
+    background: radial-gradient(circle, #bfdbfe 0%, rgba(191, 219, 254, 0) 70%);
+    top: -10%;
+    left: -10%;
+  }
+  .blob-2 {
+    background: radial-gradient(circle, #fbcfe8 0%, rgba(251, 207, 232, 0) 70%);
+    bottom: -15%;
+    right: -5%;
+    animation-delay: 4s;
+  }
+  .blob-3 {
+    background: radial-gradient(circle, #fed7aa 0%, rgba(254, 215, 170, 0) 70%);
+    top: 25%;
+    right: 15%;
+    animation-delay: 8s;
+  }
+  @keyframes blobFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(60px, 40px) scale(1.15); }
+    100% { transform: translate(-20px, 80px) scale(0.9); }
+  }
+
+  /* ── SLIM LEFT FLOATING SIDEBAR ── */
+  .sidebar {
+    width: 76px;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid var(--border-glass);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    padding: 24px 0;
+    gap: 12px;
+  }
+  .sidebar-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+  }
+  .sidebar-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .sidebar-btn.back-btn {
+    background: #ffffff;
+    margin-bottom: 12px;
+  }
+  .sidebar-btn.alert-btn {
+    margin-top: auto;
+    color: var(--accent-red);
+  }
+  .sidebar-btn.alert-btn:hover {
+    background: var(--accent-red);
+    color: #ffffff;
+  }
+
+  /* ── TOPBAR NAVIGATION ── */
+  .topbar {
+    height: 72px;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border-glass);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    position: fixed;
+    top: 0; left: 76px; right: 0;
+    z-index: 90;
+  }
+  .topbar-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-mark {
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+  }
+  .logo-icon-svg {
+    width: 24px;
+    height: 24px;
+  }
+  .logo-dot {
+    color: var(--accent-blue);
+  }
+  .topbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .nav-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+  }
+  .nav-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.5);
+  }
+  .nav-link.active {
+    background: var(--primary);
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    border-radius: 999px;
+    padding: 8px 16px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    width: 190px;
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .search-box:focus-within {
+    border-color: var(--primary);
+    width: 240px;
+    box-shadow: var(--shadow-md);
+  }
+  .search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .top-utility-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .top-utility-btn:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    transform: translateY(-1px);
+  }
+  .notif-dot {
+    position: absolute;
+    top: 3px; right: 3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-red);
+    border: 1.5px solid #ffffff;
+  }
+  .user-profile-top {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ffffff;
+    box-shadow: var(--shadow-sm);
+  }
+  .user-profile-top img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page {
+    flex: 1;
+    min-width: 0;
+    margin-top: 72px;
+    margin-left: 76px;
+    padding: 36px;
+    z-index: 10;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .header-main-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .page-title {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.8px;
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* Team avatars pill capsule */
+  .team-capsule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    border-radius: 999px;
+    padding: 6px 16px 6px 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .team-avatars-list {
+    display: flex;
+    align-items: center;
+  }
+  .team-avatar-item {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2.5px solid #ffffff;
+    overflow: hidden;
+    margin-right: -10px;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .team-avatar-item:hover {
+    transform: translateY(-4px) scale(1.1);
+    z-index: 10;
+    margin-right: -4px;
+    margin-left: 6px;
+  }
+  .team-avatar-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .team-avatar-item.plus-btn {
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: bold;
+    border-style: solid;
+  }
+  .team-avatar-item.plus-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+  }
+  .team-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #ffffff;
+    box-shadow: var(--shadow-sm);
+  }
+  .team-badge.blue { background: var(--accent-blue); }
+  .team-badge.green { background: var(--accent-green); }
+  .team-badge.orange { background: var(--accent-orange); }
+  .team-badge.red { background: var(--accent-red); }
+
+  /* Header action buttons */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #ffffff;
+  }
+  .btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .btn-ghost {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.05);
+    color: var(--text-secondary);
+  }
+  .btn-ghost:hover {
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    border-color: rgba(37, 99, 235, 0.1);
+  }
+
+  /* ── METRICS STRIP ── */
+  .stats-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-pill strong {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+  .stat-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+  }
+  .stat-pill-dot.green { background: var(--accent-green); }
+  .stat-pill-dot.orange { background: var(--accent-orange); }
+  .stat-pill-dot.red { background: var(--accent-red); }
+  .stat-pill-dot.purple { background: var(--accent-purple); }
+
+  /* ── BOARD CONTAINER ── */
+  .board-container {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-top: 16px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── FILTER CHIPS ── */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    background: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .filter-chip:hover {
+    color: var(--text-primary);
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.1);
+  }
+  .filter-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+  }
+  .filter-chip .chip-count {
+    background: rgba(15, 23, 42, 0.05);
+    color: var(--text-secondary);
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 2px;
+  }
+  .filter-chip.active .chip-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  /* ── KANBAN BOARD ── */
+  .kanban-board {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .kanban-col {
+    width: 290px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+  }
+  .kanban-col:hover {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: var(--shadow-md);
+  }
+  .col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 4px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.02);
+    padding-bottom: 8px;
+  }
+  .col-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .col-icon-wrap {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .col-title {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+  .col-count-badge {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  /* Color mapping for columns */
+  .stage-review .col-icon-wrap { background: #eff6ff; color: #2563eb; }
+  .stage-shortlist .col-icon-wrap { background: #f0fdf4; color: #16a34a; }
+  .stage-availability .col-icon-wrap { background: #fffbeb; color: #d97706; }
+  .stage-message .col-icon-wrap { background: #faf5ff; color: #7c3aed; }
+  .stage-interview .col-icon-wrap { background: #fef2f2; color: #dc2626; }
+  .stage-offer .col-icon-wrap { background: #ecfdf5; color: #059669; }
+  .stage-contract .col-icon-wrap { background: #f8fafc; color: #475569; }
+
+  .col-drop-zone {
+    min-height: 150px;
+    border: 2px dashed transparent;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 2px;
+  }
+  .col-drop-zone.drag-over {
+    border-color: var(--accent-blue);
+    background: rgba(37, 99, 235, 0.03);
+    border-radius: var(--radius-sm);
+  }
+
+  /* ── CANDIDATE CARDS (MINIMAL LIST ROW STYLE) ── */
+  .candidate-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 14px;
+    cursor: grab;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+  }
+  .candidate-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .candidate-card.dragging {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+
+  /* Side ribbon highlight - disabled for cleaner reference match */
+  .candidate-card::before {
+    display: none;
+  }
+
+  .card-top-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  .card-avatar-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+  }
+  .card-avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-avatar-initials {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .card-name-group {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .card-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-role-exp {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Right actions group */
+  .card-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Double checkmark icon style */
+  .double-check-mark {
+    color: var(--accent-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+  }
+
+  /* Circular action button */
+  .circular-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1.2px solid rgba(15, 23, 42, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+  }
+  .circular-action-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+  }
+  .circular-action-btn.success-btn:hover {
+    background: var(--accent-green);
+    color: #ffffff;
+    border-color: var(--accent-green);
+  }
+  .circular-action-btn.danger-btn:hover {
+    background: var(--accent-red);
+    color: #ffffff;
+    border-color: var(--accent-red);
+  }
+  .circular-action-btn.disabled-btn {
+    background: #f8fafc;
+    border-color: rgba(15, 23, 42, 0.04);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .circular-action-btn.disabled-btn:hover {
+    background: #f8fafc;
+    color: var(--text-muted);
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Minimal triple dots menu button */
+  .dots-action-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 50%;
+  }
+  .dots-action-btn:hover {
+    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-primary);
+  }
+
+  /* ── CARD HOVER EXPANSION PANEL ── */
+  .candidate-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .card-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+  }
+  .card-hover-details {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    width: 100%;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, margin-top 0.3s ease, padding-top 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 0px solid rgba(15, 23, 42, 0.04);
+    padding-top: 0;
+    margin-top: 0;
+  }
+  .candidate-card:hover .card-hover-details {
+    max-height: 150px;
+    opacity: 1;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top-width: 1px;
+    border-top-color: rgba(15, 23, 42, 0.05);
+    border-top-style: solid;
+  }
+  .card-hover-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .card-hover-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .card-hover-meta-item svg {
+    color: var(--text-muted);
+  }
+  .card-hover-skills-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .card-hover-skill-tag {
+    background: #f1f5f9;
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .card-view-profile-btn {
+    width: 100%;
+    height: 32px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+  }
+  .card-view-profile-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+  }
+
+  /* ── RIGHT PROFILE SIDEBAR ── */
+  .profile-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .profile-sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .profile-sidebar {
+    position: absolute;
+    top: 0; right: -480px; bottom: 0;
+    width: 480px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(36px);
+    -webkit-backdrop-filter: blur(36px);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: -10px 0 40px rgba(15, 23, 42, 0.08);
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+  }
+  .profile-sidebar-overlay.open .profile-sidebar {
+    right: 0;
+  }
+  .profile-sidebar-header {
+    padding: 24px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.5);
+  }
+  .profile-sidebar-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+  }
+  .profile-sidebar-close:hover {
+    background: var(--primary);
+    color: #ffffff;
+  }
+  .profile-sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .profile-sidebar-footer {
+    padding: 18px 24px;
+    border-top: 1px solid rgba(15, 23, 42, 0.05);
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    gap: 12px;
+  }
+
+  /* ── SIDEBAR BIO STYLING ── */
+  .profile-bio-tagline {
+    font-size: 13.5px;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    padding: 12px 16px;
+    border-left: 3px solid var(--accent-blue);
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.06) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 0 12px 12px 0;
+    line-height: 1.6;
+    position: relative;
+    font-weight: 500;
+  }
+
+  /* ── INTERVIEW VIDEO PLAYER ── */
+  .video-player-container {
+    width: 100%;
+    height: 170px;
+    background: #0f172a;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .video-player-thumbnail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.65;
+    filter: brightness(0.85);
+    transition: transform 0.4s ease;
+  }
+  .video-player-container:hover .video-player-thumbnail {
+    transform: scale(1.03);
+  }
+  .video-play-overlay-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .video-player-container:hover .video-play-overlay-btn {
+    background: var(--accent-blue);
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+  .video-duration-tag {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 10;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .video-caption-label {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 6px;
+    line-height: 1.4;
+    display: flex;
+    gap: 4px;
+  }
+
+  /* ── PERSONALITY TYPE ANALYSIS ── */
+  .personality-profile-card {
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .personality-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .personality-type-tag {
+    font-size: 10px;
+    font-weight: 850;
+    color: var(--accent-purple);
+    background: var(--accent-purple-light);
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .personality-type-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .personality-dimensions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .personality-dim-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .personality-dim-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .personality-dim-bar {
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .personality-dim-bar-fill {
+    height: 100%;
+    background: var(--accent-purple);
+    border-radius: 2px;
+  }
+
+  /* ── QUESTIONS & ANSWERS ACCORDION ── */
+  .qa-accordion-toggle-btn {
+    width: 100%;
+    padding: 10px 14px;
+    background: #ffffff;
+    border: 1.2px solid rgba(15, 23, 42, 0.06);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+    font-family: inherit;
+  }
+  .qa-accordion-toggle-btn:hover {
+    border-color: var(--primary);
+    background: #f8fafc;
+  }
+  .qa-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+  }
+  .qa-accordion-content.open {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 10px;
+  }
+  .qa-item-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .qa-item-question {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    gap: 4px;
+  }
+  .qa-item-question span {
+    color: var(--accent-blue);
+  }
+  .qa-item-answer {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Profile header card */
+  .profile-header-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+  }
+  .profile-large-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #ffffff;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+  }
+  .profile-large-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .profile-header-meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .profile-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+  }
+  .profile-role-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* Metric cards */
+  .profile-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .profile-metric-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .profile-metric-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .profile-metric-value {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  /* Fit badge score ring */
+  .fit-score-ring-wrap {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fit-score-number {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--accent-green);
+  }
+
+  /* Section styled block */
+  .profile-section-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .profile-section-title {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    padding-bottom: 6px;
+    margin-bottom: 2px;
+  }
+
+  /* AI Assessment note */
+  .ai-recommendation-banner {
+    background: var(--accent-blue-light);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--accent-blue);
+    font-weight: 500;
+    border: 1px solid rgba(37, 99, 235, 0.05);
+  }
+
+  /* Work history timeline */
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    padding-left: 12px;
+  }
+  .timeline-list::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: #f1f5f9;
+  }
+  .timeline-item {
+    position: relative;
+    padding-left: 14px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -12px; top: 5px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid #ffffff;
+    box-shadow: var(--shadow-sm);
+  }
+  .timeline-role {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .timeline-company-dates {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-top: 1px;
+  }
+  .timeline-desc {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-top: 6px;
+  }
+
+  /* Skill Profile */
+  .skills-profile-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .skill-profile-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .skill-profile-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    width: 110px;
+    flex-shrink: 0;
+  }
+  .skill-profile-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .skill-profile-bar-fg {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .skill-profile-fit-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-green);
+    background: var(--accent-green-light);
+    padding: 2px 6px;
+    border-radius: 4px;
+    width: 64px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* Risk flags styles */
+  .risk-flags-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .risk-flag-item {
+    background: var(--accent-red-light);
+    border: 1.2px solid rgba(220, 38, 38, 0.05);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .risk-flag-item.safe {
+    background: var(--accent-green-light);
+    border-color: rgba(22, 163, 74, 0.05);
+  }
+  .risk-flag-icon {
+    color: var(--accent-red);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .risk-flag-item.safe .risk-flag-icon {
+    color: var(--accent-green);
+  }
+  .risk-flag-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .risk-flag-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .risk-flag-desc {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  /* Assessment scores */
+  .assessment-scores-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .assessment-score-item {
+    background: #f8fafc;
+    border: 1.2px solid rgba(15, 23, 42, 0.03);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .assessment-score-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .assessment-score-value {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  /* Empty state for sidebar */
+  .empty-sidebar-flag {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Status detail tag */
+  .card-status-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+  .card-status-badge.high { background: var(--accent-green-light); color: var(--accent-green); }
+  .card-status-badge.mid { background: var(--accent-orange-light); color: var(--accent-orange); }
+  .card-status-badge.low { background: var(--accent-red-light); color: var(--accent-red); }
+
+  /* Empty state */
+  .empty-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 12px;
+    text-align: center;
+    color: var(--text-muted);
+    border: 2px dashed rgba(15, 23, 42, 0.05);
+    border-radius: var(--radius-sm);
+    min-height: 120px;
+    background: rgba(255, 255, 255, 0.25);
+  }
+  .empty-col svg {
+    margin-bottom: 8px;
+    opacity: 0.4;
+    color: var(--text-secondary);
+  }
+  .empty-col p {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ── PIPELINE INFO CARD ── */
+  .pipeline-banner-note {
+    background: var(--accent-blue-light);
+    border: 1px solid rgba(37, 99, 235, 0.08);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--accent-blue);
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── MODAL WINDOW ── */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    width: 490px; max-width: 94vw; padding: 28px;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.95) translateY(8px); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-backdrop.open .modal { transform: scale(1) translateY(0); }
+
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+  }
+  .modal-title { font-size: 18px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+  }
+  .modal-close:hover {
+    background: var(--primary);
+    color: #ffffff;
+  }
+
+  .modal-candidate-header {
+    display: flex; align-items: center; gap: 14px;
+    background: #ffffff; border-radius: var(--radius-sm);
+    padding: 16px; margin-bottom: 20px;
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    box-shadow: var(--shadow-sm);
+  }
+  .modal-avatar-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    overflow: hidden; border: 2.5px solid #ffffff;
+    box-shadow: var(--shadow-sm); flex-shrink: 0;
+  }
+  .modal-avatar-circle img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .modal-cand-name { font-size: 17px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+  .modal-cand-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
+
+  .modal-section { margin-bottom: 20px; }
+  .modal-section-title {
+    font-size: 11px; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px;
+  }
+
+  .stage-progress {
+    display: flex; align-items: center; gap: 0; margin-bottom: 20px;
+  }
+  .sp-step {
+    flex: 1; text-align: center; position: relative;
+  }
+  .sp-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--text-muted); background: #ffffff;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 6px; font-size: 11px; font-weight: 800;
+    color: var(--text-muted); position: relative; z-index: 1;
+    transition: all 0.25s;
+    box-shadow: var(--shadow-sm);
+  }
+  .sp-step.done .sp-dot { background: var(--accent-green); border-color: var(--accent-green); color: white; }
+  .sp-step.active .sp-dot { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 0 0 4px var(--accent-blue-light); }
+  .sp-step.pending .sp-dot { opacity: 0.5; }
+  .sp-label { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+  .sp-step.done .sp-label, .sp-step.active .sp-label { color: var(--text-primary); }
+  
+  .sp-line {
+    position: absolute; top: 14px; left: 50%; right: -50%;
+    height: 2px; background: rgba(15, 23, 42, 0.06); z-index: 0;
+  }
+  .sp-step.done .sp-line { background: var(--accent-green); }
+  .sp-step:last-child .sp-line { display: none; }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-item {
+    background: #ffffff;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    box-shadow: var(--shadow-sm);
+  }
+  .detail-key { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .detail-val { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+
+  .skills-flex {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .skill-badge {
+    background: #ffffff; border: 1px solid rgba(15, 23, 42, 0.05);
+    border-radius: 6px; padding: 4px 10px;
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+
+  /* ── TOAST MESSAGES ── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--primary); color: white;
+    padding: 12px 20px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  @keyframes toastSlide {
+    from { opacity: 0; transform: translateY(12px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.1); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.2); }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND BLOBS -->
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+<div class="bg-blob blob-3"></div>
+
+<!-- SLIM FLOATING SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-btn back-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  </div>
+  <div class="sidebar-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+  </div>
+  <div class="sidebar-btn alert-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  </div>
+</aside>
+
+<!-- TOPBAR NAVIGATION -->
+<header class="topbar">
+  <div class="topbar-logo-area">
+    <div class="logo-mark">
+      <svg class="logo-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#0f172a" />
+        <path d="M2 12L12 17L22 12" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 17L12 22L22 17" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      ait<span class="logo-dot">ie</span>
+    </div>
+  </div>
+  <div class="topbar-menu">
+    <a class="nav-link" href="#">Relationship</a>
+    <a class="nav-link" href="#">Opportunities</a>
+    <a class="nav-link" href="#">Leads</a>
+    <a class="nav-link" href="#">Calendar</a>
+    <a class="nav-link active" href="#">Shortlist Pipeline</a>
+    <a class="nav-link" href="#">Reports</a>
+    <a class="nav-link" href="#">Quotes</a>
+  </div>
+  <div class="topbar-right">
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Search candidates…" oninput="onSearch(this.value)" />
+    </div>
+    <div class="top-utility-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </div>
+    <div class="top-utility-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-dot"></span>
+    </div>
+    <div class="user-profile-top">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120&h=120" alt="User Avatar" />
+    </div>
+  </div>
+</header>
+
+<!-- MAIN PAGE BODY -->
+<main class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="header-main-row">
+      <div class="title-group">
+        <div class="page-title">Shortlist Pipeline</div>
+        <div class="page-subtitle">Senior Product Designer · Pool: Design & Creative · 2 positions to fill</div>
+      </div>
+      
+      <!-- Center-floating Team Avatars Pill -->
+      <div class="team-capsule">
+        <div class="team-avatars-list">
+          <div class="team-avatar-item"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=80&h=80" alt="Avatar 1"/><span class="team-badge red">2</span></div>
+          <div class="team-avatar-item"><img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=80&h=80" alt="Avatar 2"/><span class="team-badge blue">3</span></div>
+          <div class="team-avatar-item"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=80&h=80" alt="Avatar 3"/><span class="team-badge orange">2</span></div>
+          <div class="team-avatar-item"><img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=80&h=80" alt="Avatar 4"/><span class="team-badge red">1</span></div>
+          <div class="team-avatar-item plus-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="team-avatar-item"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=80&h=80" alt="Avatar 5"/><span class="team-badge green">1</span></div>
+          <div class="team-avatar-item plus-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="team-avatar-item plus-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="header-actions">
+        <button class="btn btn-ghost">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          List View
+        </button>
+        <button class="btn btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Candidate
+        </button>
+      </div>
+    </div>
+
+    <!-- METRICS STRIP -->
+    <div class="stats-row">
+      <div class="stat-pill"><span class="stat-pill-dot"></span>Active Candidates: <strong id="metric-active">6</strong></div>
+      <div class="stat-pill"><span class="stat-pill-dot orange"></span>Positions Filled: <strong id="metric-filled">0 / 2</strong></div>
+      <div class="stat-pill"><span class="stat-pill-dot red"></span>Availability Gate: <strong id="metric-awaiting">4</strong></div>
+      <div class="stat-pill"><span class="stat-pill-dot green"></span>Ready to Interview: <strong id="metric-ready">2</strong></div>
+      <div class="stat-pill"><span class="stat-pill-dot purple"></span>Avg. Aitie Score: <strong id="metric-avg-score">84</strong></div>
+    </div>
+    
+    <!-- PIPELINE NOTE BANNER -->
+    <div class="pipeline-banner-note">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>Actions unlock progressively. If a candidate declines availability, they leave this pipeline and the next ranked candidate is recommended automatically.</span>
+    </div>
+  </div>
+
+  <!-- BOARD HOUSING CONTAINER -->
+  <div class="board-container">
+    
+    <!-- FILTER CHIPS BAR -->
+    <div class="filter-bar">
+      <button class="filter-chip active" id="chip-all" onclick="filterStage(this,'all')">All Statuses <span class="chip-count" id="chip-cnt-all">6</span></button>
+      <button class="filter-chip" id="chip-review" onclick="filterStage(this,'review')">Review <span class="chip-count" id="chip-cnt-review">0</span></button>
+      <button class="filter-chip" id="chip-shortlist" onclick="filterStage(this,'shortlist')">Shortlist <span class="chip-count" id="chip-cnt-shortlist">2</span></button>
+      <button class="filter-chip" id="chip-availability" onclick="filterStage(this,'availability')">Availability <span class="chip-count" id="chip-cnt-availability">1</span></button>
+      <button class="filter-chip" id="chip-message" onclick="filterStage(this,'message')">Message <span class="chip-count" id="chip-cnt-message">1</span></button>
+      <button class="filter-chip" id="chip-interview" onclick="filterStage(this,'interview')">Interview <span class="chip-count" id="chip-cnt-interview">1</span></button>
+      <button class="filter-chip" id="chip-offer" onclick="filterStage(this,'offer')">Offer <span class="chip-count" id="chip-cnt-offer">0</span></button>
+      <button class="filter-chip" id="chip-contract" onclick="filterStage(this,'contract')">Contract <span class="chip-count" id="chip-cnt-contract">1</span></button>
+    </div>
+
+    <!-- KANBAN BOARD BOARD -->
+    <div class="kanban-board" id="kanbanBoard">
+
+      <!-- REVIEW -->
+      <div class="kanban-col stage-review" id="col-review">
+        <div class="col-header">
+          <div class="col-title-group">
+            <div class="col-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <span class="col-title">Review</span>
+          </div>
+          <span class="col-count-badge" id="cnt-review">0</span>
+        </div>
+        <div class="col-drop-zone" id="zone-review" ondragover="onDragOver(event)" ondrop="onDrop(event,'review')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+
+      <!-- SHORTLIST -->
+      <div class="kanban-col stage-shortlist" id="col-shortlist">
+        <div class="col-header">
+          <div class="col-title-group">
+            <div class="col-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="col-title">Shortlist</span>
+          </div>
+          <span class="col-count-badge" id="cnt-shortlist">0</span>
+        </div>
+        <div class="col-drop-zone" id="zone-shortlist" ondragover="onDragOver(event)" ondrop="onDrop(event,'shortlist')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+
+      <!-- AVAILABILITY -->
+      <div class="kanban-col stage-availability" id="col-availability">
+        <div class="col-header">
+          <div class="col-title-group">
+            <div class="col-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="col-title">Availability</span>
+          </div>
+          <span class="col-count-badge" id="cnt-availability">0</span>
+        </div>
+        <div class="col-drop-zone" id="zone-availability" ondragover="onDragOver(event)" ondrop="onDrop(event,'availability')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+
+      <!-- MESSAGE -->
+      <div class="kanban-col stage-message" id="col-message">
+        <div class="col-header">
+          <div class="col-title-group">
+            <div class="col-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <span class="col-title">Message</span>
+          </div>
+          <span class="col-count-badge" id="cnt-message">0</span>
+        </div>
+        <div class="col-drop-zone" id="zone-message" ondragover="onDragOver(event)" ondrop="onDrop(event,'message')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+
+      <!-- INTERVIEW -->
+      <div class="kanban-col stage-interview" id="col-interview">
+        <div class="col-header">
+          <div class="col-title-group">
+            <div class="col-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <span class="col-title">Interview</span>
+          </div>
+          <span class="col-count-badge" id="cnt-interview">0</span>
+        </div>
+        <div class="col-drop-zone" id="zone-interview" ondragover="onDragOver(event)" ondrop="onDrop(event,'interview')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+
+      <!-- OFFER -->
+      <div class="kanban-col stage-offer" id="col-offer">
+        <div class="col-header">
+          <div class="col-title-group">
+            <div class="col-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <span class="col-title">Offer</span>
+          </div>
+          <span class="col-count-badge" id="cnt-offer">0</span>
+        </div>
+        <div class="col-drop-zone" id="zone-offer" ondragover="onDragOver(event)" ondrop="onDrop(event,'offer')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+
+      <!-- CONTRACT -->
+      <div class="kanban-col stage-contract" id="col-contract">
+        <div class="col-header">
+          <div class="col-title-group">
+            <div class="col-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <span class="col-title">Contract</span>
+          </div>
+          <span class="col-count-badge" id="cnt-contract">0</span>
+        </div>
+        <div class="col-drop-zone" id="zone-contract" ondragover="onDragOver(event)" ondrop="onDrop(event,'contract')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+
+    </div><!-- end kanban-board -->
+  </div><!-- end board-container -->
+</main>
+
+<!-- PROFILE SIDEBAR DRAWER -->
+<div class="profile-sidebar-overlay" id="profileSidebarOverlay" onclick="closeProfileSidebar(event)">
+  <div class="profile-sidebar" id="profileSidebar" onclick="event.stopPropagation()">
+    <!-- Content injected dynamically via JS -->
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-backdrop" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Candidate Detail</div>
+      <div class="modal-close" onclick="closeModalDirect()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- TOAST MESSAGE SPAWNER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── CONSTANTS & STAGES ──
+const STAGES = ['review','shortlist','availability','message','interview','offer','contract'];
+const STAGE_LABELS = {
+  review:'Review', shortlist:'Shortlist', availability:'Availability',
+  message:'Message', interview:'Interview', offer:'Offer', contract:'Contract'
+};
+const NEXT_ACTION_LABELS = {
+  review: 'Move to Shortlist',
+  shortlist: 'Request Availability',
+  availability: 'Open Messaging',
+  message: 'Schedule Interview',
+  interview: 'Create Offer',
+  offer: 'Generate Contract',
+  contract: 'Mark as Hired'
+};
+
+const candidatesData = [
+  {
+    id:'c1', name:'D. Mehta', initials:'DM', color:'#2563eb', role:'Senior Product Designer',
+    experience:'6 Years of Experience', score:91, skills:['Design Systems','UX Research','Figma','Frontend Dev'],
+    salary:'₹28L', stage:'shortlist', availability:'confirmed',
+    salary_full:'₹28,00,000 / year', location:'Bangalore', notice:'30 days',
+    rank:1, aiNote:'Top-ranked match. Exceptional design systems work, strong research background, high alignment with design backlog.',
+    photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120',
+    
+    // Detailed profile fields
+    fitScore: 91,
+    salaryExpectation: '₹28L per year · (Within Budget Band: ₹26L – ₹36L)',
+    availabilityExpectation: '2 Weeks (IST ± 2.5h)',
+    poolRelevance: 'Design Systems · High Fit',
+    whyRecommended: 'D. Mehta has led end-to-end design for major SaaS products, aligning directly with your team\'s design systems backlog. Her AI-assisted design workflow and engineering collaboration experience address your stated skill gaps.',
+    bioTagline: 'Designing resilient, high-density SaaS patterns that scale visual systems for developer velocity.',
+    interviewVideo: {
+      thumbnail: 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80&w=400&h=225',
+      duration: '2:15',
+      question: 'Describe how you maintain component alignment across remote engineering pods.'
+    },
+    personality: {
+      type: 'INTJ - The Architect',
+      desc: 'Analytical, strategic, and highly organized. Excels at structuring complex systems and component logic.',
+      dimensions: { analytical: 95, collaborative: 74, adaptability: 82, communication: 88 }
+    },
+    evaluationQAs: [
+      {
+        q: 'How do you audit a design system with 100+ legacy variables?',
+        a: 'I write automated scripts to map occurrences, coordinate with front-end leads to align token aliases, and deprecate redundant assets in a bi-weekly phased sprint plan.'
+      },
+      {
+        q: 'Explain a time you had to compromise on a user flow due to technical limits.',
+        a: 'For Razorpay\'s onboarding flow, canvas rendering was slow on mobile. I designed a clean fallback CSS layout that loaded in under 200ms while maintaining our conversion targets.'
+      }
+    ],
+    skillsProfile: [
+      { name: 'Design Systems', score: 94, fit: 'High Fit' },
+      { name: 'Product Thinking', score: 88, fit: 'High Fit' },
+      { name: 'UX Research', score: 85, fit: 'High Fit' },
+      { name: 'Figma Prototyping', score: 90, fit: 'High Fit' }
+    ],
+    workHistory: [
+      {
+        role: 'Senior Product Designer',
+        company: 'Swiggy · Full-time',
+        dates: 'Jan 2025 – Present',
+        desc: 'Led redesign of the restaurant discovery flow, increasing conversion by 18%. Standardized core components across Swiggy delivery web apps.'
+      },
+      {
+        role: 'Product Designer',
+        company: 'Razorpay · Full-time',
+        dates: 'Mar 2023 – Dec 2024',
+        desc: 'Owned design for Razorpay\'s merchant dashboard onboarding. Reduced drop-off by 31% via progressive disclosure UX re-engineering.'
+      }
+    ],
+    riskFlags: [
+      { label: 'Salary at top of band', desc: 'Expectation ₹28L is near the budget band, but fully justified by experience.' },
+      { label: 'Long tenure at last role', desc: 'Left Swiggy after 17 months; prior roles average 2.5 years.' }
+    ],
+    assessmentResults: {
+      portfolio: 89,
+      asyncChallenge: 84,
+      productThinking: 92,
+      cultureFit: 88
+    },
+    behavioralIndicators: 'Completed 20-min AI screening. D. Mehta demonstrated extremely strong structured thinking when walking through complex design decisions. Showed confidence around user-research ambiguity. Struggled slightly with stakeholder conflict resolution.'
+  },
+  {
+    id:'c2', name:'Rohan Mehta', initials:'RM', color:'#16a34a', role:'Product Designer',
+    experience:'5 Years of Experience', score:87, skills:['Figma','Prototyping','IA','SaaS Design'],
+    salary:'₹24L', stage:'contract', availability:'confirmed',
+    salary_full:'₹24,00,000 / year', location:'Mumbai', notice:'15 days',
+    rank:2, aiNote:'Strong execution signals. Excellent portfolio with fintech and SaaS dashboards.',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120&h=120',
+    
+    // Detailed profile fields
+    fitScore: 87,
+    salaryExpectation: '₹24L per year · (Within Budget Band: ₹20L – ₹30L)',
+    availabilityExpectation: 'Immediate (IST ± 1h)',
+    poolRelevance: 'Fintech Design · High Fit',
+    whyRecommended: 'Rohan has designed complex financial dashboards at leading seed-stage fintech products. His visual design depth and dashboard prototyping skills are excellent for core onboarding flow rumbles.',
+    bioTagline: 'Crafting pixel-perfect, high-performance dashboards that make complex fintech feel effortless.',
+    interviewVideo: {
+      thumbnail: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=400&h=225',
+      duration: '1:48',
+      question: 'How do you leverage data visualization to simplify user decision making?'
+    },
+    personality: {
+      type: 'ISTJ - The Inspector',
+      desc: 'Methodical, detail-oriented, and focused on visual craftsmanship. Excels at transactional logic and wireframe execution.',
+      dimensions: { analytical: 88, collaborative: 82, adaptability: 70, communication: 78 }
+    },
+    evaluationQAs: [
+      {
+        q: 'How do you design for screen readers on complex data tables?',
+        a: 'I enforce semantic HTML table structure, write descriptive aria-labels for chart visualizations, and ensure full keyboard navigability using tabindexes.'
+      },
+      {
+        q: 'How do you handle visual design drift in startup teams?',
+        a: 'I set up strict peer reviews on Figma commits, implement component playground templates, and hold weekly QA reviews on dev staging builds.'
+      }
+    ],
+    skillsProfile: [
+      { name: 'Dashboard Design', score: 91, fit: 'High Fit' },
+      { name: 'Prototyping', score: 85, fit: 'High Fit' },
+      { name: 'Information Arch', score: 80, fit: 'High Fit' },
+      { name: 'Figma Execution', score: 88, fit: 'High Fit' }
+    ],
+    workHistory: [
+      {
+        role: 'UI/UX Designer',
+        company: 'Groww · Full-time',
+        dates: 'Jun 2024 – Present',
+        desc: 'Designed mobile trading onboarding widgets. Achieved a 15% reduction in first-trade dropoff by simplifying the KYC process.'
+      },
+      {
+        role: 'Product Design Intern',
+        company: 'Jupiter · Full-time',
+        dates: 'Nov 2023 – May 2024',
+        desc: 'Supported senior designers in drafting bill payment flows. Maintained components libraries in Figma.'
+      }
+    ],
+    riskFlags: [
+      { label: 'B2C heavy background', desc: 'No enterprise B2B SaaS dashboard experience; mostly focused on retail consumer fintech apps.' }
+    ],
+    assessmentResults: {
+      portfolio: 82,
+      asyncChallenge: 79,
+      productThinking: 85,
+      cultureFit: 90
+    },
+    behavioralIndicators: 'Completed AI screening on May 10. Rohan showed high energy and visual craft focus. Strong team alignment signals. Struggled slightly on abstract design strategy questions.'
+  },
+  {
+    id:'c3', name:'Ananya Sharma', initials:'AS', color:'#d97706', role:'UX Designer',
+    experience:'4 Years of Experience', score:83, skills:['User Research','Wireframing','Usability','Testing'],
+    salary:'₹20L', stage:'message', availability:'confirmed',
+    salary_full:'₹20,00,000 / year', location:'Hyderabad', notice:'45 days',
+    rank:3, aiNote:'Great communicator. Deep user research background, well-suited for complex flows.',
+    photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120&h=120',
+    
+    // Detailed profile fields
+    fitScore: 83,
+    salaryExpectation: '₹20L per year · (Within Budget Band: ₹18L – ₹28L)',
+    availabilityExpectation: '4 Weeks (IST ± 4h)',
+    poolRelevance: 'UX Research & Flows · High Fit',
+    whyRecommended: 'Ananya possesses a strong user research toolkit, making her a perfect fit for uncovering merchant pain points and restructuring payment information architectures.',
+    bioTagline: 'Uncovering customer empathy to design products people love, from research to reality.',
+    interviewVideo: {
+      thumbnail: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=400&h=225',
+      duration: '3:05',
+      question: 'What is your research methodology for mapping complex travel user journeys?'
+    },
+    personality: {
+      type: 'ENFJ - The Protagonist',
+      desc: 'Empathic, communicative, and values-driven. Champion of user insights, excels at interviews and usability studies.',
+      dimensions: { analytical: 75, collaborative: 94, adaptability: 90, communication: 95 }
+    },
+    evaluationQAs: [
+      {
+        q: 'What is your strategy when user feedback directly contradicts executive directives?',
+        a: 'I present quantitative usability metrics alongside raw customer video clips. Highlighting clear drop-off points aligns executives with actual user behavior.'
+      },
+      {
+        q: 'How do you recruit niche personas for B2B product testing?',
+        a: 'I coordinate with account managers, leverage product-embedded invite banners, and offer direct rewards to maximize research engagement.'
+      }
+    ],
+    skillsProfile: [
+      { name: 'User Research', score: 95, fit: 'High Fit' },
+      { name: 'Wireframing', score: 82, fit: 'High Fit' },
+      { name: 'Usability Testing', score: 89, fit: 'High Fit' },
+      { name: 'SaaS Architecture', score: 70, fit: 'Medium Fit' }
+    ],
+    workHistory: [
+      {
+        role: 'UX Researcher',
+        company: 'MakeMyTrip · Full-time',
+        dates: 'Feb 2024 – Present',
+        desc: 'Owned user insights reports for hotels booking flow. Conducted 40+ remote interviews resulting in a revised filtering layout.'
+      },
+      {
+        role: 'Interaction Designer',
+        company: 'Cleartrip · Full-time',
+        dates: 'Jul 2022 – Jan 2024',
+        desc: 'Mapped complex multi-city booking options. Coordinated visual designs with development teams.'
+      }
+    ],
+    riskFlags: [
+      { label: 'Longer notice period', desc: 'Currently under a 45-day notice period, which may slow onboarding.' }
+    ],
+    assessmentResults: {
+      portfolio: 75,
+      asyncChallenge: 81,
+      productThinking: 88,
+      cultureFit: 84
+    },
+    behavioralIndicators: 'Completed AI screening on Apr 28. Ananya demonstrated high empathy, logical detail gathering, and highly articulated research steps. Slightly reserved during fast-paced design scenario questions.'
+  },
+  {
+    id:'c4', name:'Priya Sharma', initials:'PS', color:'#dc2626', role:'Senior UX Designer',
+    experience:'7 Years of Experience', score:89, skills:['Design Strategy','Figma','Systems','UX Leadership'],
+    salary:'₹32L', stage:'interview', availability:'confirmed',
+    salary_full:'₹32,0,000 / year', location:'Pune', notice:'60 days',
+    rank:4, aiNote:'Strategic thinker with strong leadership experience. High potential for senior impact.',
+    photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120&h=120',
+    
+    // Detailed profile fields
+    fitScore: 89,
+    salaryExpectation: '₹32L per year · (Within Budget Band: ₹28L – ₹38L)',
+    availabilityExpectation: '4 Weeks (IST ± 1h)',
+    poolRelevance: 'UX Strategy & Leadership · High Fit',
+    whyRecommended: 'Priya brings deep systems-level strategy and cross-functional facilitation experience. Ideal for teams seeking to align design with business goals and streamline developer handoff.',
+    bioTagline: 'Bridging business strategy, design systems, and developer collaboration to ship high-impact software.',
+    interviewVideo: {
+      thumbnail: 'https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&q=80&w=400&h=225',
+      duration: '2:52',
+      question: 'How do you align design KPIs with quarterly revenue metrics?'
+    },
+    personality: {
+      type: 'ENTJ - The Commander',
+      desc: 'Strategic, decisive, and results-focused. Strong cross-functional driver who bridges product development and business goals.',
+      dimensions: { analytical: 94, collaborative: 76, adaptability: 84, communication: 92 }
+    },
+    evaluationQAs: [
+      {
+        q: 'How do you prove design systems return-on-investment (ROI) to leadership?',
+        a: 'I track developer design adoption rates, design token automation savings, and the reduction in code rewrite hours per sprint cycle.'
+      },
+      {
+        q: 'How do you resolve conflict between design standards and product delivery speed?',
+        a: 'I establish a multi-tier component framework where tier-1 components are strict core, and tier-2 are project-specific, preventing global blocking.'
+      }
+    ],
+    skillsProfile: [
+      { name: 'Design Strategy', score: 92, fit: 'High Fit' },
+      { name: 'UX Leadership', score: 90, fit: 'High Fit' },
+      { name: 'Figma Systems', score: 86, fit: 'High Fit' },
+      { name: 'B2B workflows', score: 80, fit: 'High Fit' }
+    ],
+    workHistory: [
+      {
+        role: 'Lead UX Designer',
+        company: 'Cognizant · Full-time',
+        dates: 'Sep 2023 – Present',
+        desc: 'Directed client workshops to model supply chain dashboards. Established internal design libraries that saved developers 20+ hours per sprint.'
+      },
+      {
+        role: 'Senior UI/UX Designer',
+        company: 'Infosys · Full-time',
+        dates: 'Oct 2020 – Aug 2023',
+        desc: 'Redesigned internal HR portals for global enterprise clients. Handled client demos and asset pipelines.'
+      }
+    ],
+    riskFlags: [
+      { label: 'Longer notice period', desc: 'Subject to a 60-day notice period, though open to negotiation.' }
+    ],
+    assessmentResults: {
+      portfolio: 85,
+      asyncChallenge: 90,
+      productThinking: 89,
+      cultureFit: 82
+    },
+    behavioralIndicators: 'Completed AI screening on Jun 02. Priya showed confidence in cross-functional coordination, clear prioritization, and strategic alignment. Struggled slightly with hands-on component detail questions.'
+  },
+  {
+    id:'c5', name:'Vikram Iyer', initials:'VI', color:'#7c3aed', role:'UI/UX Designer',
+    experience:'3 Years of Experience', score:76, skills:['UI Design','CSS','Motion','Figma'],
+    salary:'₹16L', stage:'availability', availability:'pending',
+    salary_full:'₹16,0,000 / year', location:'Chennai', notice:'30 days',
+    rank:5, aiNote:'Promising junior profile. Strong motion design skills, fast learner.',
+    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120&h=120',
+    
+    // Detailed profile fields
+    fitScore: 76,
+    salaryExpectation: '₹16L per year · (Within Budget Band: ₹15L – ₹22L)',
+    availabilityExpectation: '2 Weeks (IST ± 2h)',
+    poolRelevance: 'Visual & Motion · Medium Fit',
+    whyRecommended: 'Vikram is highly skilled in micro-interactions, motion layout mockups, and CSS styling, adding visual delight and responsiveness to user workflows.',
+    bioTagline: 'Breathing life into interfaces with animations, micro-interactions, and visual storytelling.',
+    interviewVideo: {
+      thumbnail: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&q=80&w=400&h=225',
+      duration: '2:01',
+      question: 'How do you determine when a micro-interaction adds value vs. when it causes distraction?'
+    },
+    personality: {
+      type: 'ENFP - The Campaigner',
+      desc: 'Enthusiastic, creative, and forward-looking. Passionate about visual storytelling, delightful animations, and front-end code.',
+      dimensions: { analytical: 72, collaborative: 88, adaptability: 94, communication: 90 }
+    },
+    evaluationQAs: [
+      {
+        q: 'What CSS tools do you prefer for high-performance visual animations?',
+        a: 'I use hardware-accelerated CSS transitions, requestAnimationFrame for complex DOM rendering, and Framer Motion for React layout components.'
+      },
+      {
+        q: 'How do you gather feedback on micro-interactions?',
+        a: 'I run quick 5-second preference tests, track screen time on interactive elements, and analyze conversion drop-off curves on animated panels.'
+      }
+    ],
+    skillsProfile: [
+      { name: 'UI Design', score: 85, fit: 'High Fit' },
+      { name: 'Motion Design', score: 92, fit: 'High Fit' },
+      { name: 'CSS / HTML', score: 80, fit: 'High Fit' },
+      { name: 'Figma Assets', score: 78, fit: 'Medium Fit' }
+    ],
+    workHistory: [
+      {
+        role: 'UI Designer',
+        company: 'Freecharge · Full-time',
+        dates: 'Jul 2024 – Present',
+        desc: 'Created motion assets and landing page prototypes. Added transitions to reward screens, increasing user screen time.'
+      },
+      {
+        role: 'Freelance UI Designer',
+        company: 'Self-employed',
+        dates: 'Jan 2023 – Jun 2024',
+        desc: 'Designed visual mockups and micro-animations for startup SaaS landing pages.'
+      }
+    ],
+    riskFlags: [
+      { label: 'Junior profile', desc: 'Lacks deep experience in large-scale system wireframing or complex B2B information design.' }
+    ],
+    assessmentResults: {
+      portfolio: 80,
+      asyncChallenge: 70,
+      productThinking: 72,
+      cultureFit: 83
+    },
+    behavioralIndicators: 'Completed AI screening on May 19. Vikram is highly enthusiastic, creative, and code-literate. Showed slight hesitation when explaining user validation methods.'
+  },
+  {
+    id:'c6', name:'David M.', initials:'DM', color:'#06b6d4', role:'Product Designer',
+    experience:'4 Years of Experience', score:80, skills:['Figma','B2B SaaS','Interaction','Prototyping'],
+    salary:'₹22L', stage:'shortlist', availability:'awaiting',
+    salary_full:'₹22,00,000 / year', location:'Delhi', notice:'30 days',
+    rank:6, aiNote:'Solid B2B SaaS background. Good fit for the role complexity and team context.',
+    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=120&h=120',
+    
+    // Detailed profile fields
+    fitScore: 80,
+    salaryExpectation: '₹22L per year · (Within Budget Band: ₹20L – ₹28L)',
+    availabilityExpectation: '3 Weeks (IST ± 2.5h)',
+    poolRelevance: 'B2B SaaS Design · High Fit',
+    whyRecommended: 'David brings specialized knowledge in designing multi-tenant enterprise interfaces, permission matrix configurations, and high-density transactional tables.',
+    bioTagline: 'Simplifying complex enterprise workflows, multi-tenant dashboards, and high-density data tables.',
+    interviewVideo: {
+      thumbnail: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&q=80&w=400&h=225',
+      duration: '2:30',
+      question: 'Describe your approach to designing filters for tables containing 10,000+ items.'
+    },
+    personality: {
+      type: 'INTP - The Logician',
+      desc: 'Logical, quiet, and highly focused on structural consistency. Excels at database schemas, filter widgets, and density control.',
+      dimensions: { analytical: 92, collaborative: 70, adaptability: 80, communication: 75 }
+    },
+    evaluationQAs: [
+      {
+        q: 'What is your strategy for responsive design on high-density B2B table layouts?',
+        a: 'I use visual column customization drawers, implement horizontal sticky column pinning, and design collapsable detail drawer views for row selection.'
+      },
+      {
+        q: 'How do you validate design changes on tools used daily by enterprise staff?',
+        a: 'I conduct contextual inquiries by shadowing operators, tracking task completion times, and monitoring error rates before and after design deployments.'
+      }
+    ],
+    skillsProfile: [
+      { name: 'B2B SaaS Design', score: 88, fit: 'High Fit' },
+      { name: 'Interaction Flow', score: 82, fit: 'High Fit' },
+      { name: 'Data Visualisation', score: 80, fit: 'High Fit' },
+      { name: 'Figma Components', score: 79, fit: 'Medium Fit' }
+    ],
+    workHistory: [
+      {
+        role: 'Product Designer',
+        company: 'BrowserStack · Full-time',
+        dates: 'Mar 2024 – Present',
+        desc: 'Redesigned core test runner reports page. Simplified multi-filter widgets, reducing time-to-value for testing engineers.'
+      },
+      {
+        role: 'UX Designer',
+        company: 'Freshworks · Full-time',
+        dates: 'Aug 2022 – Feb 2024',
+        desc: 'Contributed layouts to fresh-service CRM tables. Streamlined bulk actions controls, reducing customer ticket counts.'
+      }
+    ],
+    riskFlags: [
+      { label: 'Relatively short tenures', desc: 'BrowserStack tenure is 15 months; prior Freshworks tenure was 18 months.' }
+    ],
+    assessmentResults: {
+      portfolio: 78,
+      asyncChallenge: 83,
+      productThinking: 79,
+      cultureFit: 80
+    },
+    behavioralIndicators: 'Completed AI screening on Jun 08. David showed clear logical decomposition when walking through complex customer workflows. Good alignment on developer constraints.'
+  }
+];
+
+let candidates = JSON.parse(JSON.stringify(candidatesData)); // deep copy
+let dragId = null;
+let searchQuery = '';
+
+// ── SEARCH LOGIC ──
+function onSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  buildBoard();
+}
+
+// ── BUILD BOARD ──
+function buildBoard() {
+  // Update Metrics
+  const activeCount = candidates.length;
+  const filledCount = candidatesData.length - candidates.length; // mock hired count
+  const awaitingReply = candidates.filter(c => c.availability === 'pending').length;
+  const readyCount = candidates.filter(c => c.availability === 'confirmed' && c.stage === 'interview').length;
+  const totalScore = candidates.reduce((sum, c) => sum + c.score, 0);
+  const avgScore = activeCount > 0 ? Math.round(totalScore / activeCount) : 0;
+
+  document.getElementById('metric-active').textContent = activeCount;
+  document.getElementById('metric-filled').textContent = `${filledCount} / 2`;
+  document.getElementById('metric-awaiting').textContent = awaitingReply;
+  document.getElementById('metric-ready').textContent = readyCount;
+  document.getElementById('metric-avg-score').textContent = avgScore;
+
+  // Filter tab counts
+  document.getElementById('chip-cnt-all').textContent = activeCount;
+
+  STAGES.forEach(stage => {
+    const zone = document.getElementById('zone-'+stage);
+    const stageCandsRaw = candidates.filter(c => c.stage === stage);
+    
+    // Apply search filter
+    let stageCands = stageCandsRaw;
+    if (searchQuery) {
+      stageCands = stageCandsRaw.filter(c => 
+        c.name.toLowerCase().includes(searchQuery) ||
+        c.role.toLowerCase().includes(searchQuery) ||
+        c.skills.some(s => s.toLowerCase().includes(searchQuery))
+      );
+    }
+
+    // Update filter chip counters
+    const chipBadge = document.getElementById('chip-cnt-'+stage);
+    if (chipBadge) chipBadge.textContent = stageCandsRaw.length;
+
+    zone.innerHTML = '';
+    
+    if (stageCands.length === 0) {
+      zone.innerHTML = `
+        <div class="empty-col">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <p>No candidates</p>
+        </div>`;
+    } else {
+      stageCands.forEach(c => {
+        zone.appendChild(buildCard(c, stage));
+      });
+    }
+
+    document.getElementById('cnt-'+stage).textContent = stageCands.length;
+  });
+}
+
+function buildCard(c, stage) {
+  const stageIndex = STAGES.indexOf(stage);
+  const nextStage = STAGES[stageIndex + 1] || null;
+
+  const card = document.createElement('div');
+  card.className = 'candidate-card';
+  card.id = 'card-'+c.id;
+  card.draggable = true;
+  card.addEventListener('dragstart', e => { 
+    dragId = c.id; 
+    card.classList.add('dragging'); 
+    e.dataTransfer.effectAllowed = 'move'; 
+  });
+  card.addEventListener('dragend', () => { 
+    card.classList.remove('dragging'); 
+    dragId = null; 
+  });
+
+  // score color class
+  const scoreClass = c.score >= 88 ? 'high' : c.score >= 80 ? 'mid' : 'low';
+
+  // double checkmark SVG definition
+  const doubleCheckHtml = `
+    <span class="double-check-mark" title="Stage complete">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 6L8.5 14.5L5 11"/>
+        <path d="M22 6L13.5 14.5"/>
+      </svg>
+    </span>`;
+
+  // actions builder
+  let actionHtml = '';
+  if (stage === 'review') {
+    actionHtml = `
+      <div class="card-actions-right">
+        <div class="circular-action-btn success-btn" title="Shortlist" onclick="advance('${c.id}','${stage}','${nextStage}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="circular-action-btn danger-btn" title="Reject" onclick="rejectCandidate('${c.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>`;
+  } else if (stage === 'shortlist') {
+    actionHtml = `
+      <div class="card-actions-right">
+        ${doubleCheckHtml}
+        <div class="circular-action-btn" title="Request Availability" onclick="advance('${c.id}','${stage}','${nextStage}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+      </div>`;
+  } else if (stage === 'availability') {
+    if (c.availability === 'confirmed') {
+      actionHtml = `
+        <div class="card-actions-right">
+          ${doubleCheckHtml}
+          <div class="circular-action-btn" title="Open Messaging" onclick="advance('${c.id}','${stage}','${nextStage}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+        </div>`;
+    } else if (c.availability === 'pending') {
+      actionHtml = `
+        <div class="card-actions-right">
+          <div class="circular-action-btn disabled-btn" title="Awaiting Reply">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="circular-action-btn success-btn" title="Confirm manually" onclick="confirmAvailability('${c.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>`;
+    } else {
+      actionHtml = `
+        <div class="card-actions-right">
+          <div class="circular-action-btn danger-btn" title="Remove Declined" onclick="rejectCandidate('${c.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+        </div>`;
+    }
+  } else if (stage === 'message') {
+    actionHtml = `
+      <div class="card-actions-right">
+        ${doubleCheckHtml}
+        <div class="circular-action-btn" title="Schedule Interview" onclick="advance('${c.id}','${stage}','${nextStage}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+      </div>`;
+  } else if (stage === 'interview') {
+    actionHtml = `
+      <div class="card-actions-right">
+        <div class="circular-action-btn success-btn" title="Create Offer" onclick="advance('${c.id}','${stage}','${nextStage}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="circular-action-btn danger-btn" title="Reject" onclick="rejectCandidate('${c.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>`;
+  } else if (stage === 'offer') {
+    actionHtml = `
+      <div class="card-actions-right">
+        <div class="circular-action-btn" title="Generate Contract" onclick="advance('${c.id}','${stage}','${nextStage}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="dots-action-btn" title="More Actions" onclick="openProfileSidebar('${c.id}', event)">•••</div>
+      </div>`;
+  } else if (stage === 'contract') {
+    actionHtml = `
+      <div class="card-actions-right">
+        <div class="circular-action-btn success-btn" title="Mark as Hired" onclick="markHired('${c.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="dots-action-btn" title="More Actions" onclick="openProfileSidebar('${c.id}', event)">•••</div>
+      </div>`;
+  }
+
+  // avatar image or clean fallback
+  const avatarHtml = c.photo 
+    ? `<img src="${c.photo}" alt="${c.name}"/>` 
+    : `<span class="card-avatar-initials">${c.initials}</span>`;
+
+  // skills list html inside card hover panel
+  const hoverSkillsHtml = c.skills.slice(0, 3).map(s => `<span class="card-hover-skill-tag">${s}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="card-row-top">
+      <div class="card-top-info" onclick="openProfileSidebar('${c.id}', event)" style="cursor:pointer">
+        <div class="card-avatar-wrap" style="background:${c.color}">
+          ${avatarHtml}
+        </div>
+        <div class="card-name-group">
+          <div class="card-name">${c.name}</div>
+          <div class="card-role-exp">${c.role} · ${c.experience}</div>
+        </div>
+      </div>
+      ${actionHtml}
+    </div>
+    
+    <!-- Smooth Expandable Hover Panel -->
+    <div class="card-hover-details">
+      <div class="card-hover-meta-row">
+        <div class="card-hover-meta-item" title="Expected Salary">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>${c.salary}</span>
+        </div>
+        <div class="card-hover-meta-item" title="Location">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>${c.location}</span>
+        </div>
+        <div class="card-hover-meta-item" title="Aitie Score">
+          <span class="card-status-badge ${scoreClass}">${c.score} Score</span>
+        </div>
+      </div>
+      <div class="card-hover-skills-flex">
+        ${hoverSkillsHtml}
+        ${c.skills.length > 3 ? `<span class="card-hover-skill-tag">+${c.skills.length - 3}</span>` : ''}
+      </div>
+      <button class="card-view-profile-btn" onclick="openProfileSidebar('${c.id}', event)">View Profile</button>
+    </div>
+  `;
+  return card;
+}
+
+// ── DRAG & DROP MECHANICS ──
+function onDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function onDrop(e, targetStage) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragId) return;
+  const c = candidates.find(x => x.id === dragId);
+  if (!c) return;
+  const fromIdx = STAGES.indexOf(c.stage);
+  const toIdx = STAGES.indexOf(targetStage);
+  if (toIdx <= fromIdx) { 
+    showToast('⚠️ Can only move candidates forward in the pipeline.'); 
+    return; 
+  }
+  c.stage = targetStage;
+  if (targetStage === 'availability' && c.availability === 'awaiting') {
+    c.availability = 'pending';
+  }
+  buildBoard();
+  showToast(`${c.name} moved to ${STAGE_LABELS[targetStage]}`);
+}
+
+// ── STATE ADVANCEMENT ACTIONS ──
+function advance(id, from, to) {
+  if (!to || to === 'null') return;
+  const c = candidates.find(x => x.id === id);
+  if (!c) return;
+  c.stage = to;
+  if (to === 'availability' && c.availability === 'awaiting') {
+    c.availability = 'pending';
+  }
+  buildBoard();
+  showToast(`${c.name} → ${STAGE_LABELS[to]}`);
+}
+
+function confirmAvailability(id) {
+  const c = candidates.find(x => x.id === id);
+  if (!c) return;
+  c.availability = 'confirmed';
+  buildBoard();
+  showToast(`${c.name}'s availability confirmed ✓`);
+}
+
+function rejectCandidate(id) {
+  const c = candidates.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Remove ${c.name} from the pipeline? The next ranked candidate will be recommended.`)) return;
+  candidates = candidates.filter(x => x.id !== id);
+  buildBoard();
+  showToast(`${c.name} removed. Next ranked candidate queued.`);
+}
+
+function markHired(id) {
+  const c = candidates.find(x => x.id === id);
+  if (!c) return;
+  showToast(`🎉 ${c.name} marked as hired! Contract activated.`);
+  const card = document.getElementById('card-'+id);
+  if (card) {
+    card.style.transition = 'all 0.4s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.9) translateY(8px)';
+    setTimeout(() => {
+      candidates = candidates.filter(x => x.id !== id);
+      buildBoard();
+    }, 350);
+  }
+}
+
+// ── FILTER FUNCTIONALITY ──
+function filterStage(btn, stage) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  STAGES.forEach(s => {
+    const col = document.getElementById('col-'+s);
+    if (stage === 'all' || stage === s) {
+      col.style.display = '';
+    } else {
+      col.style.display = 'none';
+    }
+  });
+}
+
+// ── SIDEBAR DRAWER LOGIC ──
+let videoInterval = null;
+
+function togglePlayVideo(container) {
+  const fill = container.querySelector('.video-progress-fill');
+  const bar = container.querySelector('.video-progress-bar');
+  const playBtn = container.querySelector('.video-play-overlay-btn');
+  const isPlaying = container.classList.toggle('playing');
+  
+  if (isPlaying) {
+    bar.style.display = 'block';
+    playBtn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+      </svg>`;
+    playBtn.style.background = 'var(--accent-blue)';
+    playBtn.style.color = '#ffffff';
+    
+    let pct = 0;
+    fill.style.width = '0%';
+    if (videoInterval) clearInterval(videoInterval);
+    videoInterval = setInterval(() => {
+      pct += 1.5;
+      fill.style.width = Math.min(pct, 100) + '%';
+      if (pct >= 100) {
+        clearInterval(videoInterval);
+        videoInterval = null;
+        container.classList.remove('playing');
+        bar.style.display = 'none';
+        playBtn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>`;
+        playBtn.style.background = 'rgba(255,255,255,0.95)';
+        playBtn.style.color = '#0f172a';
+      }
+    }, 100);
+  } else {
+    if (videoInterval) {
+      clearInterval(videoInterval);
+      videoInterval = null;
+    }
+    bar.style.display = 'none';
+    playBtn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>`;
+    playBtn.style.background = 'rgba(255,255,255,0.95)';
+    playBtn.style.color = '#0f172a';
+  }
+}
+
+function toggleQaAccordion() {
+  const content = document.getElementById('qaAccordionContent');
+  const arrow = document.getElementById('qaAccordionArrow');
+  const isOpen = content.classList.toggle('open');
+  
+  if (isOpen) {
+    arrow.style.transform = 'rotate(180deg)';
+  } else {
+    arrow.style.transform = 'rotate(0deg)';
+  }
+}
+
+function openProfileSidebar(id, event) {
+  if (event) event.stopPropagation(); // Prevent double triggers
+  
+  const c = candidates.find(x => x.id === id);
+  if (!c) return;
+
+  const sidebar = document.getElementById('profileSidebar');
+  const overlay = document.getElementById('profileSidebarOverlay');
+
+  const avatarHtml = c.photo 
+    ? `<img src="${c.photo}" alt="${c.name}"/>` 
+    : `<span style="font-size:24px; font-weight:700; color:#fff">${c.initials}</span>`;
+
+  // fit score color
+  const fitColor = c.fitScore >= 88 ? 'var(--accent-green)' : c.fitScore >= 80 ? 'var(--accent-orange)' : 'var(--accent-red)';
+  
+  // Work History HTML
+  const workHistoryHtml = c.workHistory && c.workHistory.length > 0
+    ? c.workHistory.map(item => `
+        <div class="timeline-item">
+          <div class="timeline-role">${item.role}</div>
+          <div class="timeline-company-dates">${item.company} · ${item.dates}</div>
+          <div class="timeline-desc">${item.desc}</div>
+        </div>
+      `).join('')
+    : '<div class="empty-sidebar-flag">No work history provided</div>';
+
+  // Skills Profile HTML
+  const skillsProfileHtml = c.skillsProfile && c.skillsProfile.length > 0
+    ? c.skillsProfile.map(skill => `
+        <div class="skill-profile-item">
+          <span class="skill-profile-name">${skill.name}</span>
+          <div class="skill-profile-bar-bg">
+            <div class="skill-profile-bar-fg" style="width: ${skill.score}%; background: ${fitColor}"></div>
+          </div>
+          <span class="skill-profile-fit-tag" style="color: ${fitColor}; background: ${fitColor}15">${skill.fit}</span>
+        </div>
+      `).join('')
+    : '<div class="empty-sidebar-flag">No skills profile details</div>';
+
+  // Risk flags HTML
+  const riskFlagsHtml = c.riskFlags && c.riskFlags.length > 0
+    ? c.riskFlags.map(flag => `
+        <div class="risk-flag-item">
+          <span class="risk-flag-icon">⚠️</span>
+          <div class="risk-flag-body">
+            <span class="risk-flag-title">${flag.label}</span>
+            <span class="risk-flag-desc">${flag.desc}</span>
+          </div>
+        </div>
+      `).join('')
+    : `
+      <div class="risk-flag-item safe">
+        <span class="risk-flag-icon">✓</span>
+        <div class="risk-flag-body">
+          <span class="risk-flag-title">No Risk Flags</span>
+          <span class="risk-flag-desc">Candidate meets all threshold requirements.</span>
+        </div>
+      </div>`;
+
+  // Assessment results HTML
+  const assessmentsHtml = c.assessmentResults
+    ? `
+      <div class="assessment-scores-grid">
+        <div class="assessment-score-item">
+          <span class="assessment-score-label">Portfolio review</span>
+          <span class="assessment-score-value">${c.assessmentResults.portfolio}%</span>
+        </div>
+        <div class="assessment-score-item">
+          <span class="assessment-score-label">Async design challenge</span>
+          <span class="assessment-score-value">${c.assessmentResults.asyncChallenge}%</span>
+        </div>
+        <div class="assessment-score-item">
+          <span class="assessment-score-label">Product thinking quiz</span>
+          <span class="assessment-score-value">${c.assessmentResults.productThinking}%</span>
+        </div>
+        <div class="assessment-score-item">
+          <span class="assessment-score-label">Culture values alignment</span>
+          <span class="assessment-score-value">${c.assessmentResults.cultureFit}%</span>
+        </div>
+      </div>`
+    : '<div class="empty-sidebar-flag">No assessment data</div>';
+
+  // Next action buttons in drawer footer
+  const stageIndex = STAGES.indexOf(c.stage);
+  const nextStage = STAGES[stageIndex + 1] || null;
+  const footerActions = c.stage !== 'contract'
+    ? `
+      <button class="btn btn-primary" style="flex: 1;" onclick="advance('${c.id}','${c.stage}','${nextStage}');closeProfileSidebarDirect()">${NEXT_ACTION_LABELS[c.stage] || 'Move Forward'}</button>
+      <button class="btn btn-ghost" style="color:var(--accent-red); border-color:rgba(220,38,38,0.15);" onclick="rejectCandidate('${c.id}');closeProfileSidebarDirect()">Reject</button>`
+    : `
+      <button class="btn btn-primary" style="flex: 1; background:var(--accent-green)" onclick="markHired('${c.id}');closeProfileSidebarDirect()">Mark as Hired ✓</button>
+      <button class="btn btn-ghost" style="color:var(--accent-red); border-color:rgba(220,38,38,0.15);" onclick="rejectCandidate('${c.id}');closeProfileSidebarDirect()">Reject</button>`;
+
+  // Reset any active intervals when loading a new profile
+  if (videoInterval) {
+    clearInterval(videoInterval);
+    videoInterval = null;
+  }
+
+  sidebar.innerHTML = `
+    <!-- Header -->
+    <div class="profile-sidebar-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:16px; font-weight:800; color:var(--text-primary); letter-spacing:-0.4px;">Candidate Profile</span>
+      </div>
+      <div class="profile-sidebar-close" onclick="closeProfileSidebarDirect()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="profile-sidebar-body">
+      
+      <!-- Basic Details Header -->
+      <div class="profile-header-card">
+        <div class="profile-large-avatar" style="background:${c.color}">
+          ${avatarHtml}
+        </div>
+        <div class="profile-header-meta">
+          <div class="profile-name">${c.name}</div>
+          <div class="profile-role-sub">${c.role}</div>
+          <div class="profile-role-sub" style="color:var(--text-muted); font-size:11px;">${c.experience} · Rank #${c.rank}</div>
+        </div>
+        
+        <!-- Fit Score Ring -->
+        <div class="fit-score-ring-wrap">
+          <svg width="44" height="44" viewBox="0 0 36 36" style="transform:rotate(-90deg); position:absolute;">
+            <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(15, 23, 42, 0.04)" stroke-width="3"/>
+            <circle cx="18" cy="18" r="15" fill="none" stroke="${fitColor}" stroke-width="3"
+              stroke-dasharray="${(c.fitScore/100 * 2 * Math.PI * 15).toFixed(2)} ${(2 * Math.PI * 15).toFixed(2)}" stroke-linecap="round"/>
+          </svg>
+          <div class="fit-score-number" style="color:${fitColor}">${c.fitScore}</div>
+        </div>
+      </div>
+
+      <!-- Attractive Bio Tagline quote block -->
+      <div class="profile-bio-tagline">
+        <span style="font-size:24px; color:var(--accent-blue); opacity:0.25; font-family:Georgia, serif; position:absolute; left:6px; top:4px; line-height:1;">“</span>
+        <div style="padding-left:14px; padding-right:4px;">${c.bioTagline}</div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="profile-metrics-grid">
+        <div class="profile-metric-card">
+          <span class="profile-metric-label">Salary Expectations</span>
+          <span class="profile-metric-value" style="font-size:11px;">${c.salary}</span>
+        </div>
+        <div class="profile-metric-card">
+          <span class="profile-metric-label">Availability</span>
+          <span class="profile-metric-value" style="font-size:11px;">${c.availabilityExpectation}</span>
+        </div>
+        <div class="profile-metric-card">
+          <span class="profile-metric-label">Current Pool</span>
+          <span class="profile-metric-value" style="font-size:11px;">Design & Creative</span>
+        </div>
+      </div>
+
+      <!-- Candidate Interview Video Player Section -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Candidate Interview Video</div>
+        <div class="video-player-container" id="videoPlayer" onclick="togglePlayVideo(this)">
+          <img class="video-player-thumbnail" src="${c.interviewVideo.thumbnail}" alt="Video Thumbnail" />
+          <div class="video-play-overlay-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </div>
+          <span class="video-duration-tag">${c.interviewVideo.duration}</span>
+          <div class="video-progress-bar" style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.3); display: none;">
+            <div class="video-progress-fill" style="height: 100%; width: 0%; background: var(--accent-blue); transition: width 0.1s linear;"></div>
+          </div>
+        </div>
+        <div class="video-caption-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink: 0; margin-top: 2px; color: var(--accent-blue);">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>${c.interviewVideo.question}</span>
+        </div>
+      </div>
+
+      <!-- Personality Type Analysis Section -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Personality Type Analysis</div>
+        <div class="personality-profile-card">
+          <div class="personality-title-row">
+            <span style="font-weight:700; color:var(--text-primary); font-size:12px;">MBTI Type</span>
+            <span class="personality-type-tag">${c.personality.type}</span>
+          </div>
+          <div class="personality-type-desc" style="margin-top: 4px;">${c.personality.desc}</div>
+          <div class="personality-dimensions-grid" style="margin-top: 8px;">
+            <div class="personality-dim-item">
+              <div class="personality-dim-label">Analytical (${c.personality.dimensions.analytical}%)</div>
+              <div class="personality-dim-bar">
+                <div class="personality-dim-bar-fill" style="width: ${c.personality.dimensions.analytical}%;"></div>
+              </div>
+            </div>
+            <div class="personality-dim-item">
+              <div class="personality-dim-label">Collaborative (${c.personality.dimensions.collaborative}%)</div>
+              <div class="personality-dim-bar">
+                <div class="personality-dim-bar-fill" style="width: ${c.personality.dimensions.collaborative}%;"></div>
+              </div>
+            </div>
+            <div class="personality-dim-item">
+              <div class="personality-dim-label">Adaptability (${c.personality.dimensions.adaptability}%)</div>
+              <div class="personality-dim-bar">
+                <div class="personality-dim-bar-fill" style="width: ${c.personality.dimensions.adaptability}%;"></div>
+              </div>
+            </div>
+            <div class="personality-dim-item">
+              <div class="personality-dim-label">Communication (${c.personality.dimensions.communication}%)</div>
+              <div class="personality-dim-bar">
+                <div class="personality-dim-bar-fill" style="width: ${c.personality.dimensions.communication}%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screening Questions & Answers Accordion -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Evaluation process Screening Q&As</div>
+        <button class="qa-accordion-toggle-btn" id="qaAccordionBtn" onclick="toggleQaAccordion()">
+          <span>View Screening Q&As (${c.evaluationQAs.length} Answers)</span>
+          <svg id="qaAccordionArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.25s;"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="qa-accordion-content" id="qaAccordionContent">
+          ${c.evaluationQAs.map((item, idx) => `
+            <div class="qa-item-card">
+              <div class="qa-item-question">
+                <span>Q${idx+1}:</span> ${item.q}
+              </div>
+              <div class="qa-item-answer">
+                ${item.a}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- AI Generated Recommendation Summary -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">AI-generated 'Why recommended' summary</div>
+        <div class="ai-recommendation-banner">
+          "${c.whyRecommended}"
+        </div>
+      </div>
+
+      <!-- Skill Profile Details -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Skills & Capabilities Profile</div>
+        <div class="skills-profile-row">
+          ${skillsProfileHtml}
+        </div>
+      </div>
+
+      <!-- Work History / Execution History -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Work History / Execution History</div>
+        <div class="timeline-list">
+          ${workHistoryHtml}
+        </div>
+      </div>
+
+      <!-- Assessment Results -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Assessment Results</div>
+        ${assessmentsHtml}
+      </div>
+
+      <!-- AI Interview / Behavioural Indicators -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">AI screening & Behavioural Indicators</div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; font-style:normal;">
+          ${c.behavioralIndicators}
+        </div>
+      </div>
+
+      <!-- Risk flags -->
+      <div class="profile-section-card">
+        <div class="profile-section-title">Risk Flags</div>
+        <div class="risk-flags-list">
+          ${riskFlagsHtml}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sticky Footer Actions -->
+    <div class="profile-sidebar-footer">
+      ${footerActions}
+    </div>
+  `;
+
+  overlay.classList.add('open');
+}
+
+function closeProfileSidebar(e) {
+  if (e.target.id === 'profileSidebarOverlay') closeProfileSidebarDirect();
+}
+
+function closeProfileSidebarDirect() {
+  const overlay = document.getElementById('profileSidebarOverlay');
+  if (overlay) overlay.classList.remove('open');
+  if (videoInterval) {
+    clearInterval(videoInterval);
+    videoInterval = null;
+  }
+}
+
+// ── PROFILE DETAILS MODAL ──
+function openModal(id) {
+  const c = candidates.find(x => x.id === id);
+  if (!c) return;
+  
+  document.getElementById('modalTitle').textContent = 'Candidate Profile';
+  const stageIdx = STAGES.indexOf(c.stage);
+
+  // modal progress indicator
+  const steps = STAGES.map((s, i) => {
+    let cls = i < stageIdx ? 'done' : i === stageIdx ? 'active' : 'pending';
+    const icon = i < stageIdx ? '✓' : (i+1).toString();
+    return `
+      <div class="sp-step ${cls}">
+        <div class="sp-dot">${icon}</div>
+        <div class="sp-label">${STAGE_LABELS[s]}</div>
+        <div class="sp-line"></div>
+      </div>`;
+  }).join('');
+
+  // Aitie Score SVG Indicator Ring
+  const pct = c.score / 100;
+  const scoreColor = c.score >= 88 ? 'var(--accent-green)' : c.score >= 80 ? 'var(--accent-orange)' : 'var(--accent-red)';
+  const avatarHtml = c.photo 
+    ? `<img src="${c.photo}" alt="${c.name}"/>` 
+    : `<span style="font-size:20px; font-weight:700; color:#fff">${c.initials}</span>`;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-candidate-header">
+      <div class="modal-avatar-circle" style="background:${c.color}">
+        ${avatarHtml}
+      </div>
+      <div>
+        <div class="modal-cand-name">${c.name}</div>
+        <div class="modal-cand-sub">${c.role} · ${c.experience} exp · Rank #${c.rank}</div>
+      </div>
+      
+      <!-- Aitie score gauge in modal header -->
+      <div style="margin-left:auto; text-align:center; position:relative; width:56px; height:56px; display:flex; align-items:center; justify-content:center;">
+        <svg width="56" height="56" viewBox="0 0 52 52" style="transform:rotate(-90deg); position:absolute; top:0; left:0;">
+          <circle cx="26" cy="26" r="21" fill="none" stroke="rgba(15, 23, 42, 0.04)" stroke-width="4.5"/>
+          <circle cx="26" cy="26" r="21" fill="none" stroke="${scoreColor}" stroke-width="4.5"
+            stroke-dasharray="${(pct * 2 * Math.PI * 21).toFixed(2)} ${(2 * Math.PI * 21).toFixed(2)}" stroke-linecap="round"/>
+        </svg>
+        <div style="font-size:16px; font-weight:800; color:${scoreColor}; z-index:2;">${c.score}</div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Pipeline Progress</div>
+      <div class="stage-progress">${steps}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">AI Assessment & Recommendation</div>
+      <div style="background:var(--accent-blue-light); border-radius:var(--radius-sm); padding:14px; font-size:12.5px; color:#2563eb; line-height:1.6; font-weight:500;">
+        ${c.aiNote}
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Core Details</div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-key">Expected Salary</div><div class="detail-val">${c.salary_full}</div></div>
+        <div class="detail-item"><div class="detail-key">Current Location</div><div class="detail-val">${c.location}</div></div>
+        <div class="detail-item"><div class="detail-key">Notice Period</div><div class="detail-val">${c.notice}</div></div>
+        <div class="detail-item"><div class="detail-key">Availability Status</div><div class="detail-val" style="text-transform:capitalize">${c.availability}</div></div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Skills & Keywords</div>
+      <div class="skills-flex">
+        ${c.skills.map(s => `<span class="skill-badge">${s}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      ${c.stage !== 'contract' 
+        ? `<button class="btn btn-primary" onclick="advance('${c.id}','${c.stage}','${STAGES[STAGES.indexOf(c.stage)+1]}');closeModalDirect()">${NEXT_ACTION_LABELS[c.stage] || 'Move Forward'}</button>` 
+        : `<button class="btn btn-primary" onclick="markHired('${c.id}');closeModalDirect()">Mark as Hired ✓</button>`
+      }
+      <button class="btn btn-ghost" onclick="closeModalDirect()">Close</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'modal') closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+// ── TOAST DISPATCHER ──
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span>${msg}</span>`;
+  const container = document.getElementById('toastContainer');
+  container.appendChild(t);
+  setTimeout(() => { 
+    t.style.opacity = '0'; 
+    t.style.transform = 'translateY(-4px) scale(0.95)'; 
+    t.style.transition = 'all 0.25s ease'; 
+    setTimeout(() => t.remove(), 250); 
+  }, 2800);
+}
+
+// ── INITIALIZATION ──
+buildBoard();
+</script>
+</body>
+</html>
