@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AITIE Talent Curation Process - Extended</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Modern Tech Palette */
+            --bg-page: #F3F6F8;         
+            --bg-card: #FFFFFF;         
+            --text-primary: #0F172A;    
+            --text-secondary: #475569;  
+            --border-color: #E2E8F0;    
+            --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.05); 
+            
+            /* Primary Accent (Light Blue / Sky Blue) */
+            --accent-primary-bg: #F0F9FF; 
+            --accent-primary-icon: #0EA5E9; 
+            
+            /* Success Accent (Emerald) */
+            --accent-green-bg: #ECFDF5; 
+            --accent-green-icon: #10B981; 
+            
+            /* Highlight Accent (Amber/Orange) */
+            --accent-highlight-bg: #FFFBEB;
+            --accent-highlight-text: #D97706;
+
+            --icon-pending: #CBD5E1;    
+            
+            --font-main: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: var(--font-main); 
+            background: var(--bg-page); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 40px 20px; 
+            min-height: 100vh;
+        }
+
+        /* --- DESKTOP CONTAINER --- */
+        .curation-frame {
+            width: 100%;
+            max-width: 1050px; 
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- TOP HEADER --- */
+        .frame-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #F8FAFC;
+        }
+        .frame-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .status-badge {
+            background: var(--accent-primary-bg);
+            color: var(--accent-primary-icon);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* --- MAIN ANIMATION AREA (The Theater) --- */
+        .theater {
+            height: 540px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .scene {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: scale(1.02);
+        }
+        .scene.active { 
+            opacity: 1; 
+            pointer-events: auto; 
+            transform: scale(1);
+        }
+
+        /* --- SCENE 1: REQUEST VALIDATION --- */
+        .validation-doc {
+            width: 380px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+        .val-header {
+            font-size: 13px; font-weight: 700; color: var(--accent-primary-icon);
+            margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .val-item {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 15px; color: var(--text-secondary);
+            margin-bottom: 12px; font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 8px; border-radius: 8px;
+        }
+        .val-item i { font-size: 20px; color: var(--icon-pending); transition: 0.2s; }
+        .val-item.checked { color: var(--text-primary); background: var(--bg-page); }
+        .val-item.checked i { color: var(--accent-green-icon); }
+
+        /* --- SCENE 2: POOL SCAN --- */
+        .pool-container { text-align: center; width: 100%; }
+        .pool-stats { margin-bottom: 20px; font-size: 16px; font-weight: 600; color: var(--accent-primary-icon); transition: 0.3s;}
+        .avatar-pool {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 12px;
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .pool-av {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            background-size: cover; background-position: center;
+            border: 2px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        
+        .pool-av.rejected { opacity: 0.15; filter: grayscale(100%); transform: scale(0.8); box-shadow: none; }
+        .pool-av.highlight { 
+            transform: scale(1.3); 
+            z-index: 10; 
+            border: 3px solid var(--accent-primary-icon);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+            opacity: 1; filter: none;
+        }
+
+        /* --- SCENE 3: SCORING & RANKING --- */
+        .scoring-ui {
+            display: flex; gap: 40px; align-items: center;
+            background: white; padding: 40px; border-radius: 20px;
+            border: 1px solid var(--border-color); box-shadow: var(--shadow-card);
+            width: 650px;
+        }
+        .scoring-profile { position: relative; width: 120px; height: 120px; }
+        .score-target-av {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--accent-primary-bg);
+            transition: opacity 0.2s;
+        }
+        .scan-line {
+            position: absolute; top: 0; left: -10px; right: -10px; height: 3px;
+            background: var(--accent-primary-icon); box-shadow: 0 0 10px var(--accent-primary-icon);
+            opacity: 0; z-index: 5;
+        }
+        .scene.active .scan-line {
+            animation: scanProfile 1s ease-in-out infinite; opacity: 0.8;
+        }
+        @keyframes scanProfile { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+
+        .score-bars { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .sb-row { display: flex; flex-direction: column; gap: 8px; }
+        .sb-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .sb-val { color: var(--accent-primary-icon); transition: 0.3s; }
+        .sb-track { width: 100%; height: 10px; background: #F1F5F9; border-radius: 5px; overflow: hidden; }
+        .sb-fill { height: 100%; background: var(--accent-primary-icon); width: 0%; transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 5px;}
+
+        /* --- SCENE 4: FAIRNESS / DISCOVERY --- */
+        .fairness-board { display: flex; flex-direction: column; align-items: center; gap: 30px; width: 100%; }
+        .fairness-title { font-size: 15px; font-weight: 600; color: var(--text-secondary); text-align: center; }
+        .fairness-title strong { color: var(--text-primary); }
+        .rotation-matrix { display: flex; gap: 20px; position: relative; }
+        .fair-card {
+            width: 150px; background: white; border-radius: 16px;
+            border: 1px solid var(--border-color); padding: 20px 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s;
+            position: relative; background: #FFF;
+        }
+        .fair-av { width: 60px; height: 60px; border-radius: 50%; background-size: cover; border: 2px solid #E2E8F0; }
+        .f-score { font-size: 18px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 4px;}
+        .f-score i { font-size: 14px; color: var(--accent-green-icon); }
+        .f-tag { font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; text-align: center; line-height: 1.3;}
+        
+        .tag-norm { background: #F1F5F9; color: var(--text-secondary); }
+        .tag-boost { background: var(--accent-primary-bg); color: var(--accent-primary-icon); opacity: 0; transition: 0.3s; }
+        .tag-amber { background: var(--accent-highlight-bg); color: var(--accent-highlight-text); opacity: 0; transition: 0.3s; }
+        
+        /* Swapping distances: Card width 150 + Gap 20 = 170px */
+        .swap-right { transform: translateX(170px); z-index: 1; opacity: 0.5; filter: grayscale(50%); }
+        .swap-left { transform: translateX(-170px); z-index: 2; box-shadow: 0 15px 30px rgba(14, 165, 233, 0.2); border-color: var(--accent-primary-icon); }
+        .fair-card.promoted .tag-boost, .fair-card.promoted .tag-amber { opacity: 1; }
+
+        /* --- SCENE 5: RECOMMENDATIONS --- */
+        .rec-list {
+            display: flex; gap: 16px; padding: 10px 20px;
+            width: 100%; max-width: 850px; justify-content: center; flex-wrap: wrap;
+        }
+        .rec-card {
+            flex: 0 0 170px; background: white; border-radius: 12px;
+            border: 1px solid var(--border-color); padding: 16px 12px;
+            box-shadow: var(--shadow-card);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            opacity: 0; transform: scale(0.9); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .rec-av { 
+            width: 55px; height: 55px; border-radius: 50%; 
+            background-size: cover; border: 2px solid white; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 4px;
+        }
+        .rec-name { font-weight: 600; font-size: 13px; color: var(--text-primary); text-align: center;}
+        .rec-role { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: -4px;}
+        .rec-score { font-size: 18px; font-weight: 700; color: var(--accent-green-icon); margin-top: 2px; }
+        .rec-score i { font-size: 14px; }
+
+        .scene.active .rec-card.show { opacity: 1; transform: scale(1); }
+        .rec-card.show:hover { transform: translateY(-4px); box-shadow: 0 12px 20px rgba(14, 165, 233, 0.15); border-color: var(--accent-primary-icon); cursor: pointer;}
+
+        /* --- BOTTOM TRACKER --- */
+        .tracker {
+            background: #F8FAFC;
+            border-top: 1px solid var(--border-color);
+            padding: 30px 40px;
+        }
+        .milestones {
+            display: flex; justify-content: space-between;
+            align-items: center; position: relative;
+            margin-bottom: 25px; max-width: 800px; margin-left: auto; margin-right: auto;
+        }
+        .milestones::before {
+            content: ''; position: absolute;
+            top: 22px; left: 40px; right: 40px; height: 3px;
+            background: var(--border-color); z-index: 0; border-radius: 3px;
+        }
+        .progress-line {
+            position: absolute; top: 22px; left: 40px; height: 3px;
+            background: var(--accent-primary-icon); z-index: 1;
+            width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 3px;
+        }
+        .milestone {
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            position: relative; z-index: 2; flex: 1;
+        }
+        .m-icon {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: white; border: 2px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--icon-pending);
+            transition: all 0.4s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+        }
+        .m-icon.active { 
+            background: var(--accent-primary-bg); color: var(--accent-primary-icon); 
+            border-color: var(--accent-primary-icon); animation: bumpIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            box-shadow: 0 0 0 6px rgba(14, 165, 233, 0.1);
+        }
+        .m-icon.done { background: var(--accent-green-icon); color: white; border-color: var(--accent-green-icon); }
+        
+        .m-label { font-size: 13px; font-weight: 600; color: var(--icon-pending); text-align: center; }
+        .m-label.active { color: var(--accent-primary-icon); }
+        .m-label.done { color: var(--text-primary); }
+        
+        @keyframes bumpIn { 0% { transform: scale(0.8); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+        /* STATUS TEXT */
+        .status-text-block { text-align: center; min-height: 50px; }
+        .status-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+        .status-desc { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+
+        /* RESTART BUTTON */
+        .controls { display: flex; justify-content: center; padding: 20px 0; }
+        .restart-btn {
+            padding: 12px 28px; background: var(--text-primary); color: white; border: none;
+            border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; font-family: var(--font-main);
+            transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+        }
+        .restart-btn:hover { background: var(--accent-primary-icon); transform: translateY(-2px); }
+        .restart-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; background: var(--text-secondary); }
+    </style>
+</head>
+<body>
+
+<div class="curation-frame">
+    <div class="frame-header">
+        <h2>AI Talent Sourcing Pipeline</h2>
+        <div class="status-badge" id="globalStatus">Initializing</div>
+    </div>
+
+    <div class="theater">
+
+        <div class="scene" id="s1">
+            <div class="validation-doc">
+                <div class="val-header"><i class="ti ti-file-analytics"></i> Parsing Job Requirements</div>
+                <div class="val-item" id="val1"><i class="ti ti-circle"></i> <span>Sr. Engineers & Architects</span></div>
+                <div class="val-item" id="val2"><i class="ti ti-circle"></i> <span>100% Remote Capability</span></div>
+                <div class="val-item" id="val3"><i class="ti ti-circle"></i> <span>Budget: Flexible Global</span></div>
+                <div class="val-item" id="val4"><i class="ti ti-circle"></i> <span>Stack: React, Node, AWS, DevOps</span></div>
+                <div class="val-item" id="val5"><i class="ti ti-circle"></i> <span>Immediate Availability</span></div>
+            </div>
+        </div>
+
+        <div class="scene" id="s2">
+            <div class="pool-container">
+                <div class="pool-stats" id="poolStats">Loading Database...</div>
+                <div class="avatar-pool" id="poolGrid">
+                    </div>
+            </div>
+        </div>
+
+        <div class="scene" id="s3">
+            <div class="scoring-ui">
+                <div class="scoring-profile">
+                    <img src="" class="score-target-av" id="scoreTarget">
+                    <div class="scan-line"></div>
+                </div>
+                <div class="score-bars">
+                    <div class="sb-row">
+                        <div class="sb-header"><span>AITIE Match Score</span><span class="sb-val" id="sv1">0%</span></div>
+                        <div class="sb-track"><div class="sb-fill" id="sf1"></div></div>
+                    </div>
+                    <div class="sb-row">
+                        <div class="sb-header"><span>Technical Skills Fit</span><span class="sb-val" id="sv2">0%</span></div>
+                        <div class="sb-track"><div class="sb-fill" id="sf2"></div></div>
+                    </div>
+                    <div class="sb-row">
+                        <div class="sb-header"><span>Context & Culture Fit</span><span class="sb-val" id="sv3">0%</span></div>
+                        <div class="sb-track"><div class="sb-fill" id="sf3"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scene" id="s4">
+            <div class="fairness-board">
+                <div class="fairness-title"><strong>Opportunity Equalization</strong><br>Prioritizing new talent and top performers over historical bias</div>
+                <div class="rotation-matrix">
+                    <div class="fair-card" id="fc1">
+                        <div class="fair-av" style="background-image: url('https://i.pravatar.cc/150?img=33')"></div>
+                        <div class="f-score">92</div>
+                        <div class="f-tag tag-norm">Frequent Invitee</div>
+                    </div>
+                    <div class="fair-card" id="fc2">
+                        <div class="fair-av" style="background-image: url('https://i.pravatar.cc/150?img=47')"></div>
+                        <div class="f-score"><i class="ti ti-trending-up"></i> 97</div>
+                        <div class="f-tag tag-boost">New Profile</div>
+                    </div>
+                    <div class="fair-card" id="fc3">
+                        <div class="fair-av" style="background-image: url('https://i.pravatar.cc/150?img=12')"></div>
+                        <div class="f-score">94</div>
+                        <div class="f-tag tag-norm">Frequent Invitee</div>
+                    </div>
+                    <div class="fair-card" id="fc4">
+                        <div class="fair-av" style="background-image: url('https://i.pravatar.cc/150?img=68')"></div>
+                        <div class="f-score"><i class="ti ti-star-filled"></i> 96</div>
+                        <div class="f-tag tag-amber">Top Performer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scene" id="s5">
+            <div class="rec-list" id="recList">
+                </div>
+        </div>
+
+    </div>
+
+    <div class="tracker">
+        <div class="milestones">
+            <div class="progress-line" id="pline"></div>
+            
+            <div class="milestone">
+                <div class="m-icon" id="mi0"><i class="ti ti-clipboard-list"></i></div>
+                <div class="m-label" id="ml0">Validation</div>
+            </div>
+            <div class="milestone">
+                <div class="m-icon" id="mi1"><i class="ti ti-users-scan"></i></div>
+                <div class="m-label" id="ml1">Pool Scan</div>
+            </div>
+            <div class="milestone">
+                <div class="m-icon" id="mi2"><i class="ti ti-cpu"></i></div>
+                <div class="m-label" id="ml2">Scoring</div>
+            </div>
+            <div class="milestone">
+                <div class="m-icon" id="mi3"><i class="ti ti-scale"></i></div>
+                <div class="m-label" id="ml3">Discovery</div>
+            </div>
+            <div class="milestone">
+                <div class="m-icon" id="mi4"><i class="ti ti-rosette-discount-check"></i></div>
+                <div class="m-label" id="ml4">Results</div>
+            </div>
+        </div>
+        
+        <div class="status-text-block">
+            <div class="status-title" id="stxt_title">System Idle</div>
+            <div class="status-desc" id="stxt_desc">Click "Run Process" to begin extended talent curation.</div>
+        </div>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="restart-btn" id="restartBtn" onclick="runPipeline()"><i class="ti ti-player-play-filled"></i> Start Curation Engine</button>
+</div>
+
+<script>
+    // Data setup
+    const finalNames = ['Arjun M.', 'Priya S.', 'David L.', 'Elena R.', 'Michael K.', 'Sara J.', 'Wei C.', 'Aisha T.'];
+    const finalRoles = ['Sr. Node Dev', 'Full Stack Eng', 'Backend Lead', 'React Specialist', 'Cloud Architect', 'DevOps Eng', 'Systems Arch', 'API Developer'];
+    const finalAvatars = [11, 47, 33, 22, 15, 68, 55, 41]; 
+    const finalScores = [98, 97, 96, 95, 94, 94, 93, 92];
+    
+    // Total 40 avatars for the scan pool
+    const poolAvatarIds = Array.from({length: 40}, (_, i) => i + 10);
+
+    function setupPoolGrid() {
+        const grid = document.getElementById('poolGrid');
+        grid.innerHTML = '';
+        poolAvatarIds.forEach((id) => {
+            const av = document.createElement('div');
+            av.className = 'pool-av';
+            av.style.backgroundImage = `url('https://i.pravatar.cc/150?img=${id}')`;
+            grid.appendChild(av);
+        });
+    }
+
+    function setupRecs() {
+        const recList = document.getElementById('recList');
+        recList.innerHTML = '';
+        
+        for (let i = 0; i < 8; i++) {
+            const card = document.createElement('div');
+            card.className = 'rec-card';
+            card.id = `rec${i}`;
+
+            card.innerHTML = `
+                <div class="rec-av" style="background-image: url('https://i.pravatar.cc/150?img=${finalAvatars[i]}')"></div>
+                <div class="rec-name">${finalNames[i]}</div>
+                <div class="rec-role">${finalRoles[i]}</div>
+                <div class="rec-score"><i class="ti ti-sparkles"></i> ${finalScores[i]}</div>
+            `;
+            recList.appendChild(card);
+        }
+    }
+
+    function setScene(n) {
+        for(let i=1; i<=5; i++) {
+            document.getElementById('s'+i).classList.toggle('active', i===n);
+        }
+    }
+
+    function setMilestone(n) {
+        const progPcts = [0, 25, 50, 75, 100];
+        document.getElementById('pline').style.width = (n >= 0 ? progPcts[n] : 0) + '%';
+        
+        for(let i=0; i<5; i++) {
+            const mi = document.getElementById('mi'+i);
+            const ml = document.getElementById('ml'+i);
+            mi.classList.remove('active','done');
+            ml.classList.remove('active','done');
+            
+            if(i < n) { 
+                mi.classList.add('done'); 
+                ml.classList.add('done'); 
+                mi.innerHTML = '<i class="ti ti-check"></i>'; 
+            }
+            else if(i === n) { 
+                mi.classList.add('active'); 
+                ml.classList.add('active'); 
+                const icons = ['clipboard-list','users-scan','cpu','scale','rosette-discount-check'];
+                mi.innerHTML = `<i class="ti ti-${icons[i]}"></i>`;
+            }
+        }
+    }
+
+    function updateStatus(stage, title, desc) {
+        document.getElementById('globalStatus').textContent = stage;
+        document.getElementById('stxt_title').textContent = title;
+        document.getElementById('stxt_desc').textContent = desc;
+    }
+
+    function checkItem(id) {
+        const item = document.getElementById(id);
+        item.classList.add('checked');
+        item.querySelector('i').className = 'ti ti-circle-check-filled';
+    }
+
+    let timers = [];
+    function after(ms, fn) { const t = setTimeout(fn, ms); timers.push(t); return t; }
+    function clearAllTimers() { timers.forEach(clearTimeout); timers = []; }
+
+    // Helpers for Scene 2
+    function highlightWave(indices, text) {
+        document.getElementById('poolStats').innerText = text;
+        const avatars = document.querySelectorAll('.pool-av');
+        avatars.forEach((av, i) => {
+            if (indices.includes(i)) {
+                av.classList.add('highlight');
+                av.classList.remove('rejected');
+            } else {
+                av.classList.remove('highlight');
+                av.classList.add('rejected');
+            }
+        });
+    }
+    function resetWave() {
+        document.querySelectorAll('.pool-av').forEach(av => {
+            av.classList.remove('highlight', 'rejected');
+        });
+    }
+
+    // Helpers for Scene 3
+    function resetBars() {
+        document.getElementById('scoreTarget').style.opacity = '0';
+        document.getElementById('sf1').style.width = '0%';
+        document.getElementById('sf2').style.width = '0%';
+        document.getElementById('sf3').style.width = '0%';
+        document.getElementById('sv1').innerText = '0%';
+        document.getElementById('sv2').innerText = '0%';
+        document.getElementById('sv3').innerText = '0%';
+    }
+    function scoreCandidate(imgId, s1, s2, s3) {
+        const target = document.getElementById('scoreTarget');
+        target.src = `https://i.pravatar.cc/150?img=${imgId}`;
+        target.style.opacity = '1';
+        
+        document.getElementById('sf1').style.width = s1 + '%';
+        document.getElementById('sv1').innerText = s1 + '%';
+        
+        setTimeout(() => { 
+            document.getElementById('sf2').style.width = s2 + '%'; 
+            document.getElementById('sv2').innerText = s2 + '%'; 
+        }, 150);
+        
+        setTimeout(() => { 
+            document.getElementById('sf3').style.width = s3 + '%'; 
+            document.getElementById('sv3').innerText = s3 + '%'; 
+        }, 300);
+    }
+
+    function runPipeline() {
+        clearAllTimers();
+        setupPoolGrid();
+        setupRecs();
+        
+        const btn = document.getElementById('restartBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ti ti-loader ti-spin"></i> Processing...';
+
+        // RESET STATES
+        document.querySelectorAll('.val-item').forEach(el => {
+            el.classList.remove('checked');
+            el.querySelector('i').className = 'ti ti-circle';
+        });
+        resetBars();
+        
+        const fc1 = document.getElementById('fc1');
+        const fc2 = document.getElementById('fc2');
+        const fc3 = document.getElementById('fc3');
+        const fc4 = document.getElementById('fc4');
+        [fc1, fc2, fc3, fc4].forEach(el => el.className = 'fair-card');
+
+        // --- STAGE 1: VALIDATION ---
+        setScene(0); setMilestone(-1);
+        after(300, () => {
+            setScene(1); setMilestone(0);
+            updateStatus('Validating', 'Extracting parameters', 'Parsing incoming multi-role request...');
+        });
+        after(800, () => checkItem('val1'));
+        after(1200, () => checkItem('val2'));
+        after(1600, () => checkItem('val3'));
+        after(2000, () => checkItem('val4'));
+        after(2400, () => {
+            checkItem('val5');
+            updateStatus('Validating', 'Validation Complete', 'All parameters locked. Expanding to global pool.');
+        });
+
+        // --- STAGE 2: POOL SCAN (Multiple Pools) ---
+        after(3500, () => {
+            setScene(2); setMilestone(1);
+            updateStatus('Scanning', 'Initiating Deep Scan', 'Evaluating base requirements across global networks.');
+        });
+
+        // Wave 1
+        after(4000, () => highlightWave([2, 8, 14, 21, 29, 34], 'Scanning Frontend Network (React Focus)...'));
+        after(5000, resetWave);
+        // Wave 2
+        after(5200, () => highlightWave([4, 11, 16, 25, 31, 38], 'Scanning Backend Network (Node.js Focus)...'));
+        after(6200, resetWave);
+        // Wave 3
+        after(6400, () => highlightWave([1, 7, 18, 22, 27, 33, 39], 'Scanning Cloud Architecture Network...'));
+        after(7500, () => {
+            highlightWave([2, 11, 16, 18, 22, 29, 33, 38], 'Consolidating Top Match Subset');
+            updateStatus('Scanning', 'Subsets Isolated', 'Moving 8 top profiles to deep technical scoring.');
+        });
+
+        // --- STAGE 3: SCORING (Multiple Candidates) ---
+        after(8800, () => {
+            setScene(3); setMilestone(2);
+            updateStatus('Scoring', 'Deep Technical Profiling', 'Calculating similarities sequentially for top candidates.');
+        });
+
+        // Candidate 1
+        after(9000, () => scoreCandidate(11, 98, 95, 91));
+        after(10000, resetBars);
+        // Candidate 2
+        after(10200, () => scoreCandidate(47, 85, 96, 92));
+        after(11200, resetBars);
+        // Candidate 3
+        after(11400, () => scoreCandidate(33, 94, 88, 96));
+        after(12400, resetBars);
+        // Candidate 4
+        after(12600, () => {
+            scoreCandidate(22, 95, 94, 95);
+            updateStatus('Scoring', 'Profiling Complete', 'All 8 final candidates scored successfully.');
+        });
+
+        // --- STAGE 4: FAIRNESS & DISCOVERY ---
+        after(14000, () => {
+            setScene(4); setMilestone(3);
+            updateStatus('Discovery', 'Evaluating Talent Rotation', 'Surfacing high-scoring hidden gems and new profiles.');
+        });
+
+        // Swap 1
+        after(15000, () => {
+            updateStatus('Discovery', 'Promoting New Talent', 'Swapping out frequent invitee for a newly tested profile with superior metrics.');
+            fc2.classList.add('promoted');
+            setTimeout(() => {
+                fc1.classList.add('swap-right');
+                fc2.classList.add('swap-left');
+            }, 300);
+        });
+
+        // Swap 2
+        after(17000, () => {
+            updateStatus('Discovery', 'Prioritizing Client Satisfaction', 'Elevating top performer with stellar reviews over standard pool rotation.');
+            fc4.classList.add('promoted');
+            setTimeout(() => {
+                fc3.classList.add('swap-right');
+                fc4.classList.add('swap-left');
+            }, 300);
+        });
+
+        // --- STAGE 5: RESULTS (Multiple Output) ---
+        after(19000, () => {
+            setScene(5); setMilestone(4);
+            updateStatus('Complete', 'Final Shortlist Generated', 'Top 8 curated experts ranked and matched.');
+            
+            // Fast staggered reveal of 8 cards
+            for(let i=0; i<8; i++) {
+                after(200 + (i * 120), () => {
+                    document.getElementById(`rec${i}`).classList.add('show');
+                });
+            }
+        });
+
+        // --- FINISH ---
+        after(21500, () => {
+            updateStatus('Standby', 'Curation Successful', 'Review the selected multiprofile cohort above.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ti ti-refresh"></i> Run Process Again';
+        });
+    }
+
+    // Prepare visuals immediately
+    document.addEventListener('DOMContentLoaded', setupPoolGrid);
+</script>
+
+</body>
+</html>
